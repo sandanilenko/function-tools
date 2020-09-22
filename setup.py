@@ -52,6 +52,9 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     keywords='',
     packages=find_packages(exclude=excluded_packages),
@@ -59,5 +62,6 @@ setup(
     author='Alexander Danilenko',
     install_requires=install_requires,
     dependency_links=dependency_links,
-    author_email='a.danilenko@bars.group'
+    author_email='a.danilenko@bars.group',
+    url='https://github.com/sandanilenko/function-tools',
 )
