@@ -56,7 +56,8 @@ class LazySavingFunction(
     def do_on_save(self, object_):
         """
         Добавление действия на момент сохранения
-        :param object_: действие (список, экземпляр модели, функция)
+
+        Принимает действие (список, экземпляр модели, функция)
         """
         if isinstance(object_, (Iterable, Sequence)):
             for act in object_:

@@ -144,15 +144,6 @@ class EntityCache(BaseCache):
         Если требуется доступ через внешний ключ, то необходимо использовать
         точку в качестве разделителей. Например,
         searching_key = tuple('account_id', 'supplier.code')
-        hash_table = {
-            {{account_id}}: {
-                {{supplier.code}}: some_object,
-                {{supplier.code}}: some_object,
-                {{supplier.code}}: some_object,
-                ...
-            },
-            ...
-        }
         """
         hash_table = {}
 
@@ -252,11 +243,7 @@ class EntityCache(BaseCache):
         Получение плоского списка значений объектов указанного свойства без
         пустых значений.
 
-        Пример использования:
-
-        some_list = cache.flat_values_list(
-            field_name='pk',
-        )
+        : param field_name: наименование поля
         """
         return list(
             filter(
@@ -328,17 +315,9 @@ class EntityCache(BaseCache):
     ) -> Optional[List[Tuple]]:
         """
         Получение списка кортежей состоящих из значений полей объектов согласно
-        заданным параметрам.
+        заданным параметрам
 
-        Пример использования:
-
-        some_values_list = cache.values_list(
-            fields=(
-                'pk',
-                'code',
-                'name',
-            ),
-        )
+        :param fields: кортеж наименований полей
         """
         fields_getter = attrgetter(*fields)
 
@@ -467,14 +446,10 @@ class PeriodicalEntityCache(BaseCache):
         """
         Метод получения фильтра актуализации по дате.
 
-         При получении счетов или аналитик при переносе остатков необходимо
-         учитывать период действия следуя следующей логике:
-         -- старые:
-               begin < date_from
-               end >= date_from
-         -- новые:
-               begin <= date_to
-               end > date_to
+        При получении счетов или аналитик при переносе остатков необходимо
+        учитывать период действия следуя следующей логике:
+        -- старые - begin < date_from &&  end >= date_from
+        -- новые - begin <= date_to && end > date_to
 
         :param dict period_type: словарь с параметрами для актуализации по дате
         :return:

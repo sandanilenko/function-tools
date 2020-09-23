@@ -4,3 +4,10 @@
 Ошибки (Error)
 ==============
 
+
+.. automodule:: function_tools.errors
+    :members:
+    :undoc-members:
+    :private-members:
+    :inherited-members:
+    :show-inheritance:

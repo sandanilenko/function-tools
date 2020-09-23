@@ -11,7 +11,7 @@
 Для упрощения восприятия материала рекомендуется обращаться к подробной
 диаграмме классов, представленной на Рисунке 1.
 
-.. figure:: ./images/class_diagram.png
+.. figure:: ./_static/images/class_diagram.png
     :align: center
     :alt: Рисунок 1
 

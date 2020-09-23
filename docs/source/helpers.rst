@@ -5,3 +5,9 @@
 ==================
 
 
+.. automodule:: function_tools.helpers
+    :members:
+    :undoc-members:
+    :private-members:
+    :inherited-members:
+    :show-inheritance:

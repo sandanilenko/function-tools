@@ -1,23 +1,24 @@
 ..
 
 
-FunctionTools
-=============
+Добро пожаловать в документацию function-tools
+==============================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Содержание:
+    :maxdepth: 1
 
-    functions
+    validators.rst
+    helpers.rst
+    errors.rst
+    runners.rst
+    presenters.rst
+    managers.rst
+    results.rst
+    general.rst
+    functions.rst
+    caches.rst
+    mixins.rst
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 **FunctionTools** - это библиотека вспомогательных классов для реализации
 Функций системы.
@@ -139,6 +140,14 @@ ResultPresenter
 Подробное описание компонентов можно найти по ссылкам:
 
 .. _Confluence: https://conf.bars.group/display/BONLINE/Function+Tools
+
+
+Указатели
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
 
 
