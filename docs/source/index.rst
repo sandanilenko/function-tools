@@ -1,8 +1,23 @@
-.. _base_function_tools:
+..
 
-=============
+
 FunctionTools
 =============
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Содержание:
+
+    functions
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
 **FunctionTools** - это библиотека вспомогательных классов для реализации
 Функций системы.
@@ -47,7 +62,7 @@ FunctionTools
 
 Упрощенная диаграмма классов представлена на Рисунке 1.
 
-.. figure:: ./images/simple_class_diagram.png
+.. figure:: ./_static/images/simple_class_diagram.png
     :align: center
     :alt: Рисунок 1
 
@@ -113,7 +128,7 @@ ResultPresenter
 
 Подробная актуальная диаграммка классов представлена на Рисунке 2.
 
-.. figure:: ./images/class_diagram.png
+.. figure:: ./_static/images/class_diagram.png
     :align: center
     :alt: Рисунок 2
 

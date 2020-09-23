@@ -1,4 +1,4 @@
-.. _function_tools_functions:
+.. _functions:
 
 ==================
 Функции (Function)

@@ -22,7 +22,7 @@
 
 Упрощенная диаграмма классов представлена на Рисунке 1.
 
-![Рисунок 1](/docs/images/simple_class_diagram.png)
+![Рисунок 1](/docs/source/_static/images/simple_class_diagram.png)
 
 Основные компоненты:
 
@@ -78,4 +78,4 @@
 
 Подробная актуальная диаграммка классов представлена на Рисунке 2.
 
-![Рисунок 2](/docs/images/class_diagram.png)
+![Рисунок 2](/docs/source/_static/images/class_diagram.png)
