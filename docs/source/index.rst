@@ -5,19 +5,10 @@
 ==============================================
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
-    validators.rst
-    helpers.rst
-    errors.rst
-    runners.rst
-    presenters.rst
-    managers.rst
-    results.rst
+    ./components/index.rst
     general.rst
-    functions.rst
-    caches.rst
-    mixins.rst
 
 
 **FunctionTools** - это библиотека вспомогательных классов для реализации
