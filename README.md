@@ -79,3 +79,5 @@
 Подробная актуальная диаграммка классов представлена на Рисунке 2.
 
 ![Рисунок 2](/docs/source/_static/images/class_diagram.png)
+
+С подробной документацией можно ознакомиться на [function-tools.readthedocs.io](https://function-tools.readthedocs.io/ru/latest/)
