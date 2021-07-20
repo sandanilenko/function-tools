@@ -26,6 +26,13 @@ class HelperMixin(metaclass=ABCMeta):
 
         self._prepare_helper()
 
+    @property
+    def helper(self):
+        """
+        Возвращает помощника
+        """
+        return self._helper
+
     def _prepare_helper(self):
         """
         Точка расширения для создания помощника.
@@ -68,6 +75,13 @@ class GlobalHelperMixin(metaclass=ABCMeta):
             global_helper or
             self._prepare_global_helper()
         )
+
+    @property
+    def global_helper(self):
+        """
+        Возвращает глобального помощника
+        """
+        return self._global_helper
 
     def _prepare_global_helper(self):
         """
