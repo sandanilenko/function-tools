@@ -103,8 +103,8 @@ class LazySavingPredefinedQueueFunction(
 
 
 class LazySavingPredefinedQueueGlobalHelperFunction(
-    LazySavingPredefinedQueueFunction,
     GlobalHelperMixin,
+    LazySavingPredefinedQueueFunction,
     metaclass=ABCMeta
 ):
     """
@@ -142,8 +142,8 @@ class LazyDelegateSavingPredefinedQueueFunction(
 
 
 class LazyDelegateSavingPredefinedQueueGlobalHelperFunction(
-    LazyDelegateSavingPredefinedQueueFunction,
     GlobalHelperMixin,
+    LazyDelegateSavingPredefinedQueueFunction,
     metaclass=ABCMeta,
 ):
     """
@@ -181,8 +181,8 @@ class LazySavingSettableQueueFunction(
 
 
 class LazySavingSettableQueueGlobalHelperFunction(
-    LazySavingSettableQueueFunction,
     GlobalHelperMixin,
+    LazySavingSettableQueueFunction,
     metaclass=ABCMeta,
 ):
     """
@@ -218,8 +218,8 @@ class LazyDelegateSavingSettableQueueFunction(
 
 
 class LazyDelegateSavingSettableQueueGlobalHelperFunction(
-    LazyDelegateSavingSettableQueueFunction,
     GlobalHelperMixin,
+    LazyDelegateSavingSettableQueueFunction,
     metaclass=ABCMeta,
 ):
     """
