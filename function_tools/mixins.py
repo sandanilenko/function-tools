@@ -56,12 +56,22 @@ class ValidatorMixin(metaclass=ABCMeta):
         Точка расширения для создания валидатора
         """
 
+    def before_validate(self):
+        """
+        Возможность расширения запускаемого объекта перед валидацией
+        """
+
     def validate(self):
         """
         Публичный метод для запуска валидатора сущности
         """
         if self._validator:
             self._validator.validate(self)
+
+    def after_validate(self):
+        """
+        Возможность расширения запускаемого объекта после валидации
+        """
 
 
 class GlobalHelperMixin(metaclass=ABCMeta):
