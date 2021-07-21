@@ -26,6 +26,13 @@ class HelperMixin(metaclass=ABCMeta):
 
         self._prepare_helper()
 
+    @property
+    def helper(self):
+        """
+        Возвращает помощника
+        """
+        return self._helper
+
     def _prepare_helper(self):
         """
         Точка расширения для создания помощника.
@@ -49,12 +56,22 @@ class ValidatorMixin(metaclass=ABCMeta):
         Точка расширения для создания валидатора
         """
 
+    def before_validate(self):
+        """
+        Возможность расширения запускаемого объекта перед валидацией
+        """
+
     def validate(self):
         """
         Публичный метод для запуска валидатора сущности
         """
         if self._validator:
             self._validator.validate(self)
+
+    def after_validate(self):
+        """
+        Возможность расширения запускаемого объекта после валидации
+        """
 
 
 class GlobalHelperMixin(metaclass=ABCMeta):
@@ -68,6 +85,13 @@ class GlobalHelperMixin(metaclass=ABCMeta):
             global_helper or
             self._prepare_global_helper()
         )
+
+    @property
+    def global_helper(self):
+        """
+        Возвращает глобального помощника
+        """
+        return self._global_helper
 
     def _prepare_global_helper(self):
         """

@@ -81,7 +81,11 @@ class BaseRunner(
                 runnable: RunnableObject = (
                     self._queue.popleft()
                 )
+
+                runnable.before_validate()
                 runnable.validate()
+                runnable.after_validate()
+
                 runnable.run()
 
                 self.result.append_entity(runnable.result)
@@ -148,7 +152,9 @@ class LazyStrictSavingRunner(
         """
         Выполнение всех задач стоящих в очереди
         """
+        self.before_validate()
         self.validate()
+        self.after_validate()
 
         if self.result.has_not_errors:
             queue_length = len(self._queue)

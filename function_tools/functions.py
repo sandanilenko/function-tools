@@ -53,6 +53,18 @@ class LazySavingFunction(
     Абстрактный класс для создания классов функций с отложенным сохранением
     """
 
+    def __init__(self, *args, ignore_errors_on_saving: bool = False, **kwargs):
+        """
+        Инициализация функции с отложенным сохранением
+
+        Args:
+            ignore_errors_on_saving Указывает на игнорирование наличия ошибок при выполнении запроса и необходимость
+            сохранения результата в БД в любом случае
+        """
+        self._ignore_errors_on_saving = ignore_errors_on_saving
+
+        super().__init__(*args, **kwargs)
+
     def do_on_save(self, object_):
         """
         Добавление действия на момент сохранения
@@ -68,11 +80,11 @@ class LazySavingFunction(
     def run(self):
         """
         Выполение действий функции с дальнейшим сохранением объектов в базу
-        при отсутствии ошибок
+        при отсутствии ошибок или явном указании игнорирования ошибок при сохранении
         """
         self._prepare()
 
-        if self.result.has_not_errors:
+        if self._ignore_errors_on_saving or self.result.has_not_errors:
             self.do_save()
 
 
@@ -91,8 +103,8 @@ class LazySavingPredefinedQueueFunction(
 
 
 class LazySavingPredefinedQueueGlobalHelperFunction(
-    LazySavingPredefinedQueueFunction,
     GlobalHelperMixin,
+    LazySavingPredefinedQueueFunction,
     metaclass=ABCMeta
 ):
     """
@@ -130,8 +142,8 @@ class LazyDelegateSavingPredefinedQueueFunction(
 
 
 class LazyDelegateSavingPredefinedQueueGlobalHelperFunction(
-    LazyDelegateSavingPredefinedQueueFunction,
     GlobalHelperMixin,
+    LazyDelegateSavingPredefinedQueueFunction,
     metaclass=ABCMeta,
 ):
     """
@@ -169,8 +181,8 @@ class LazySavingSettableQueueFunction(
 
 
 class LazySavingSettableQueueGlobalHelperFunction(
-    LazySavingSettableQueueFunction,
     GlobalHelperMixin,
+    LazySavingSettableQueueFunction,
     metaclass=ABCMeta,
 ):
     """
@@ -206,8 +218,8 @@ class LazyDelegateSavingSettableQueueFunction(
 
 
 class LazyDelegateSavingSettableQueueGlobalHelperFunction(
-    LazyDelegateSavingSettableQueueFunction,
     GlobalHelperMixin,
+    LazyDelegateSavingSettableQueueFunction,
     metaclass=ABCMeta,
 ):
     """
