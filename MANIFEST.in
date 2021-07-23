@@ -4,3 +4,4 @@ include LICENSE
 include CHANGES.md
 include README.md
 include setup.py
+include requirements.txt
