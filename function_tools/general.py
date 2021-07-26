@@ -7,6 +7,7 @@ from collections import (
 )
 from typing import (
     Deque,
+    Optional,
 )
 
 from django.db import (
@@ -38,11 +39,19 @@ class RunnableObject(
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._result: BaseRunnableResult = BaseRunnableResult()
+        self._result: Optional[BaseRunnableResult] = None
+
+        self._prepare_result()
 
     @property
     def result(self) -> BaseRunnableResult:
         return self._result
+
+    def _prepare_result(self):
+        """
+        Метод подготовки результата
+        """
+        self._result = BaseRunnableResult()
 
     @abstractmethod
     def run(self):
