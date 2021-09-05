@@ -12,6 +12,9 @@ from typing import (
     Optional,
 )
 
+from function_tools.consts import (
+    EMPTY_VERBOSE_NAME,
+)
 from function_tools.general import (
     LazySavingActionModelRunnableObject,
     RunnableObject,
@@ -30,6 +33,9 @@ class BaseFunction(
     """
     Базовый класс для создания функций
     """
+
+    # Полное наименование функции для дальнейшей регистрации и отображения пользователю
+    verbose_name: str = EMPTY_VERBOSE_NAME
 
     @abstractmethod
     def _prepare(self):
