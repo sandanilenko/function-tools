@@ -1,0 +1,17 @@
+# Здесь регистрируются обработчики сигналов и производится регистрация экшенов
+
+from <some_path> import (
+    <some_controller> as controller,
+)
+
+
+def register_actions():
+    """
+    Функция регистрации Action'ов и ActionPack-ов в контроллере
+    """
+
+    controller.packs.extend(
+        [
+            TransferBalancesPack(),
+        ]
+    )

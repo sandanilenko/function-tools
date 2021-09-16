@@ -1,0 +1,71 @@
+from m3_ext.ui.containers import (
+    ExtForm,
+    ExtToolBar,
+)
+from m3_ext.ui.controls import (
+    ExtButton,
+)
+from m3_ext.ui.windows.base import (
+    BaseExtWindow,
+)
+
+from web_bb.core.base.enums import (
+    Layout,
+)
+
+
+class {{ camel_case_function_name }}ParametersDialogWindow(BaseExtWindow):
+    """
+    Диалоговое окно заполнения параметров функции  "{{ function_verbose_name }}"
+    """
+
+    def __init__(self):
+        super().__init__()
+
+        self.template_globals = '{{ camel_case_function_name }}ParametersDialogWindow.js'
+        self.title = 'Перенести остатки'
+        self.layout = Layout.FIT
+        self.form = ExtForm()
+        self.width, self.height = 375, 130
+        self.maximizable = False
+
+        self.form.label_width = 175
+
+        self._prepare_content_components()
+        self._prepare_footer_bar()
+
+        self.items.append(self.form)
+
+    def _prepare_content_components(self):
+        """
+        Создание компонентов-параметров
+        """
+        components = []
+
+        self.form.items.extend([
+            *components,
+        ])
+
+    def _prepare_footer_bar(self):
+        """
+        Создание кнопок в футере
+        """
+        self.footer_bar = ExtToolBar()
+
+        self.footer_bar.add_fill()
+
+        self.save_btn = ExtButton(
+            text='Далее',
+            handler='submit',
+        )
+        self.cancel_btn = ExtButton(
+            text='Отмена',
+            handler='function(){ win.close(true); }',
+        )
+
+        self.footer_bar.items.extend(
+            [
+                self.save_btn,
+                self.cancel_btn,
+            ]
+        )

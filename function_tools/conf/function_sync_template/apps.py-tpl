@@ -1,0 +1,8 @@
+from django.apps import (
+    AppConfig,
+)
+
+
+class {{ camel_case_function_name }}Config(AppConfig):
+    name = '{{ function_python_path }}'
+    label = '{{ function_verbose_name }}'
