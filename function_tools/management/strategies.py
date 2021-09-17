@@ -1,8 +1,10 @@
 from abc import (
     ABCMeta,
 )
-
-from enum import Enum
+from typing import (
+    Dict,
+    Type,
+)
 
 from function_tools.caches import (
     CacheStorage,
@@ -11,14 +13,20 @@ from function_tools.errors import (
     BaseError,
 )
 from function_tools.functions import (
-    BaseFunction, LazySavingPredefinedQueueFunction, LazyDelegateSavingPredefinedQueueFunction,
+    BaseFunction,
+    LazyDelegateSavingPredefinedQueueFunction,
+    LazySavingPredefinedQueueFunction,
 )
 from function_tools.helpers import (
     BaseFunctionHelper,
     BaseRunnerHelper,
 )
-from function_tools.management.enums import ImplementationStrategyEnum
-from function_tools.management.signals import implementation_strategy_factory_after_init_signal
+from function_tools.management.enums import (
+    ImplementationStrategyEnum,
+)
+from function_tools.management.signals import (
+    implementation_strategy_factory_after_init_signal,
+)
 from function_tools.managers import (
     RunnerManager,
 )
@@ -29,7 +37,8 @@ from function_tools.results import (
     BaseRunnableResult,
 )
 from function_tools.runners import (
-    BaseRunner, LazySavingRunner,
+    BaseRunner,
+    LazySavingRunner,
 )
 from function_tools.validators import (
     BaseValidator,
@@ -66,49 +75,145 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         return self._manager_class
 
     @property
+    def manager_class_name(self):
+        return self._manager_class.__name__
+
+    @property
+    def manager_class_module(self):
+        return self._manager_class.__module__
+
+    @property
     def runner_class(self):
         return self._runner_class
+
+    @property
+    def runner_class_name(self):
+        return self._runner_class.__name__
+
+    @property
+    def runner_class_module(self):
+        return self._runner_class.__module__
 
     @property
     def function_class(self):
         return self._function_class
 
     @property
+    def function_class_name(self):
+        return self._function_class.__name__
+
+    @property
+    def function_class_module(self):
+        return self._function_class.__module__
+
+    @property
     def runner_helper_class(self):
         return self._runner_helper_class
+
+    @property
+    def runner_helper_class_name(self):
+        return self._runner_helper_class.__name__
+
+    @property
+    def runner_helper_class_module(self):
+        return self._runner_helper_class.__module__
 
     @property
     def function_helper_class(self):
         return self._function_helper_class
 
     @property
+    def function_helper_class_name(self):
+        return self._function_helper_class.__name__
+
+    @property
+    def function_helper_class_module(self):
+        return self._function_helper_class.__module__
+
+    @property
     def runner_validator_class(self):
         return self._runner_validator_class
+
+    @property
+    def runner_validator_class_name(self):
+        return self._runner_validator_class.__name__
+
+    @property
+    def runner_validator_class_module(self):
+        return self._runner_validator_class.__module__
 
     @property
     def function_validator_class(self):
         return self._function_validator_class
 
     @property
+    def function_validator_class_name(self):
+        return self._function_validator_class.__name__
+
+    @property
+    def function_validator_class_module(self):
+        return self._function_validator_class.__module__
+
+    @property
     def runner_cache_storage_class(self):
         return self._runner_cache_storage_class
+
+    @property
+    def runner_cache_storage_class_name(self):
+        return self._runner_cache_storage_class.__name__
+
+    @property
+    def runner_cache_storage_class_module(self):
+        return self._runner_cache_storage_class.__module__
 
     @property
     def function_cache_storage_class(self):
         return self._function_cache_storage_class
 
     @property
+    def function_cache_storage_class_name(self):
+        return self._function_cache_storage_class.__name__
+
+    @property
+    def function_cache_storage_class_module(self):
+        return self._function_cache_storage_class.__module__
+
+    @property
     def error_class(self):
         return self._error_class
+
+    @property
+    def error_class_name(self):
+        return self._error_class.__name__
+
+    @property
+    def error_class_module(self):
+        return self._error_class.__module__
 
     @property
     def result_class(self):
         return self._result_class
 
     @property
+    def result_class_name(self):
+        return self._result_class.__name__
+
+    @property
+    def result_class_module(self):
+        return self._result_class.__module__
+
+    @property
     def result_presenter_class(self):
         return self._result_presenter_class
-    
+
+    @property
+    def result_presenter_class_name(self):
+        return self._result_presenter_class.__name__
+
+    @property
+    def result_presenter_class_module(self):
+        return self._result_presenter_class.__module__
+
     def _prepare_manager_class(self):
         """
         Устанавливает класс менеджера
@@ -246,7 +351,7 @@ class ImplementationStrategyFactory:
 
         implementation_strategy_factory_after_init_signal.send(self)
 
-    def _prepare_implementation_strategy_map(self):
+    def _prepare_implementation_strategy_map(self) -> Dict[ImplementationStrategyEnum, Type[FunctionImplementationStrategy]]:  # noqa
         """
         Создание карты соответствия стратегий реализации функции
         """
@@ -261,12 +366,12 @@ class ImplementationStrategyFactory:
     def patch_implementation_strategy_map(
         self,
         enum_strategy: ImplementationStrategyEnum,
-        strategy: FunctionImplementationStrategy,
+        strategy_class: Type[FunctionImplementationStrategy],
     ):
         """
         Публичный метод для патчинга карты соответствия стратегии реализации функций
         """
-        self._implementation_strategy_map[enum_strategy] = strategy
+        self._implementation_strategy_map[enum_strategy] = strategy_class
 
     def get_strategy_implementation(
         self,
@@ -275,4 +380,4 @@ class ImplementationStrategyFactory:
         """
         Возвращает стратегию реализации функции по значению перечисления
         """
-        return self._implementation_strategy_map[enum_strategy]
+        return self._implementation_strategy_map[enum_strategy]()

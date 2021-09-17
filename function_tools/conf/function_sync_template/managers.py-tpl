@@ -1,0 +1,35 @@
+from {{ strategy.manager_class_module }} import (
+    {{ strategy.manager_class_name }},
+)
+
+from {{ function_python_path }}.functions import (
+    {{ camel_case_function_name }}Function,
+)
+from {{ function_python_path }}.runners import (
+    {{ camel_case_function_name }}Runner,
+)
+
+
+class {{ camel_case_function_name }}RunnerManager(RunnerManager):
+    """
+    Менеджер пускателя функций системы "{{ function_verbose_name }}"
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def _create_runner(self):
+        """
+        Создание пускателя функции "{{ function_verbose_name }}"
+        """
+        self._runner = {{ camel_case_function_name }}Runner()
+
+    def _prepare_runner(self):
+        """
+        Создание функции "{{ function_verbose_name }}" и добавление ее в очередь исполнения пускателя
+        """
+        function = {{ camel_case_function_name }}Function()
+
+        self._runner.enqueue(
+            runnable=function,
+        )

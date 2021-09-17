@@ -1,4 +1,17 @@
-class {{ camel_case_function_name }}RunnerHelper(BaseTransferBalancesHelper):
+from {{ strategy.function_helper_class_module }} import (
+    {{ strategy.function_helper_class_name }},
+)
+from {{ strategy.runner_helper_class_module }} import (
+    {{ strategy.runner_helper_class_name }},
+)
+
+from {{ function_python_path }}.caches import (
+    {{ camel_case_function_name }}FunctionCacheStorage,
+    {{ camel_case_function_name }}RunnerCacheStorage,
+)
+
+
+class {{ camel_case_function_name }}RunnerHelper({{ strategy.runner_helper_class_name }}):
     """
     Помощник пусковика функции "{{ function_verbose_name }}"
     """
@@ -12,7 +25,7 @@ class {{ camel_case_function_name }}RunnerHelper(BaseTransferBalancesHelper):
         )
 
 
-class {{ camel_case_function_name }}FunctionHelper(BaseTransferBalancesHelper):
+class {{ camel_case_function_name }}FunctionHelper({{ strategy.function_helper_class_name }}):
     """
     Помощник функции "{{ function_verbose_name }}"
     """

@@ -1,4 +1,16 @@
-class {{ camel_case_function_name }}Runner(BaseRunner):
+from {{ strategy.runner_class_module }} import (
+    {{ strategy.runner_class_name }},
+)
+
+from {{ function_python_path }}.helpers import (
+    {{ camel_case_function_name }}RunnerHelper,
+)
+from {{ function_python_path }}.validators import (
+    {{ camel_case_function_name }}RunnerValidator,
+)
+
+
+class {{ camel_case_function_name }}Runner({{ strategy.runner_class_name }}):
     """
     Пусковик функции "{{ function_verbose_name }}"
     """
