@@ -25,6 +25,12 @@ from django.template import (
 from django.utils.version import (
     get_docs_version,
 )
+from isort.api import (
+    sort_code_string,
+)
+from isort.settings import (
+    DEFAULT_CONFIG,
+)
 
 import function_tools
 from function_tools.functions import (
@@ -32,9 +38,12 @@ from function_tools.functions import (
     LazyDelegateSavingPredefinedQueueFunction,
     LazySavingPredefinedQueueFunction,
 )
-from function_tools.management.consts import PARAMETERS_DIALOG_WINDOW
+from function_tools.management.consts import (
+    PARAMETERS_DIALOG_WINDOW,
+)
 from function_tools.management.enums import (
-    ImplementationStrategyEnum, FunctionTypeEnum,
+    FunctionTypeEnum,
+    ImplementationStrategyEnum,
 )
 from function_tools.management.strategies import (
     ImplementationStrategyFactory,
@@ -79,6 +88,18 @@ class PatchedTemplateCommand(TemplateCommand):
         Возвращает абсолютный путь директории, содержащей директорию conf с шаблонами внутри
         """
         return django.__path__[0]
+
+    def _sort_imports(
+        self,
+        content: str,
+    ):
+        """
+        Сортировка импортов при помощи isort
+        """
+        return sort_code_string(
+            code=content,
+            config=getattr(settings, 'ISORT_CONFIG') or DEFAULT_CONFIG,
+        )
 
     def handle_template(self, template, subdir):
         """
@@ -222,6 +243,9 @@ class PatchedTemplateCommand(TemplateCommand):
                     template = Engine().from_string(content)
                     content = template.render(self.context)
                     with open(new_path, 'w', encoding='utf-8') as new_file:
+                        if new_path.endswith('.py'):
+                            content = self._sort_imports(content)
+
                         new_file.write(content)
                 else:
                     shutil.copyfile(old_path, new_path)
