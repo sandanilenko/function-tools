@@ -50,6 +50,11 @@ class PatchedTemplateCommand(TemplateCommand):
     Пропатченная команда для создания пакетов по шаблону
     """
 
+    rewrite_template_suffixes = (
+        ('.py-tpl', '.py'),
+        ('.js-tpl', '.js'),
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
