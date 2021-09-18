@@ -65,6 +65,7 @@ class PatchedTemplateCommand(TemplateCommand):
     rewrite_template_suffixes = (
         ('.py-tpl', '.py'),
         ('.js-tpl', '.js'),
+        ('.md-tpl', '.md'),
     )
 
     def __init__(self, *args, **kwargs):
@@ -506,4 +507,4 @@ class Command(PatchedTemplateCommand):
             'js',
         ])
 
-        super().handle('function', function_name, target, **options)
+        super().handle('m3_function', function_name, target, **options)
