@@ -1,6 +1,9 @@
 import os
 import shutil
 import sys
+from distutils.util import (
+    strtobool,
+)
 from os import (
     path,
 )
@@ -191,7 +194,7 @@ class PatchedTemplateCommand(TemplateCommand):
                 f'Rendering {self.app_or_project} template files with filenames: {", ".join(self.extra_files)}\n'
             )
 
-    def _prepare_new_path_file(self, filename, relative_dir):
+    def _prepare_new_path_file(self, filename, relative_dir, options):
         """
         Подготовка пути генерируемого из шаблона файла
         """
@@ -209,6 +212,36 @@ class PatchedTemplateCommand(TemplateCommand):
             )
 
         return new_path
+
+    def _render_file(self, new_path, old_path, filename):
+        # Only render the Python files, as we don't want to
+        # accidentally render Django templates files
+        if new_path.endswith(self.extensions) or filename in self.extra_files:
+            with open(old_path, 'r', encoding='utf-8') as template_file:
+                content = template_file.read()
+            template = Engine().from_string(content)
+            content = template.render(self.context)
+            with open(new_path, 'w', encoding='utf-8') as new_file:
+                if new_path.endswith('.py'):
+                    content = self._sort_imports(content)
+
+                new_file.write(content)
+        else:
+            shutil.copyfile(old_path, new_path)
+
+        if self.verbosity >= 2:
+            self.stdout.write("Creating %s\n" % new_path)
+        try:
+            shutil.copymode(old_path, new_path)
+            self.make_writeable(new_path)
+        except OSError:
+            self.stderr.write(
+                msg=(
+                    f'Notice: Couldn\'t set permission bits on {new_path}. You\'re probably using an uncommon '
+                    f'filesystem setup. No problem.'
+                ),
+                style_func=self.style.NOTICE,
+            )
 
     def _create_package_by_template(self, options):
         template_dir = self.handle_template(options['template'], self.base_subdir)
@@ -233,36 +266,9 @@ class PatchedTemplateCommand(TemplateCommand):
                     continue
                 old_path = path.join(root, filename)
 
-                new_path = self._prepare_new_path_file(filename, relative_dir)
+                new_path = self._prepare_new_path_file(filename, relative_dir, options)
 
-                # Only render the Python files, as we don't want to
-                # accidentally render Django templates files
-                if new_path.endswith(self.extensions) or filename in self.extra_files:
-                    with open(old_path, 'r', encoding='utf-8') as template_file:
-                        content = template_file.read()
-                    template = Engine().from_string(content)
-                    content = template.render(self.context)
-                    with open(new_path, 'w', encoding='utf-8') as new_file:
-                        if new_path.endswith('.py'):
-                            content = self._sort_imports(content)
-
-                        new_file.write(content)
-                else:
-                    shutil.copyfile(old_path, new_path)
-
-                if self.verbosity >= 2:
-                    self.stdout.write("Creating %s\n" % new_path)
-                try:
-                    shutil.copymode(old_path, new_path)
-                    self.make_writeable(new_path)
-                except OSError:
-                    self.stderr.write(
-                        msg=(
-                            f'Notice: Couldn\'t set permission bits on {new_path}. You\'re probably using an uncommon '
-                            f'filesystem setup. No problem.'
-                        ),
-                        style_func=self.style.NOTICE,
-                    )
+                self._render_file(new_path, old_path, filename)
 
     def _prepare_context(self, options):
         """
@@ -398,6 +404,15 @@ class Command(PatchedTemplateCommand):
             default=FunctionTypeEnum.SYNC,
         )
 
+        parser.add_argument(
+            '--is_parameterized',
+            dest='is_parameterized',
+            action='store',
+            type=strtobool,
+            help='Является ли функция параметризированной с необходимостью показа окна с параметрами пользователю?',
+            default=False,
+        )
+
     def _get_conf_dir_parent_path(self):
         """
         Возвращает абсолютный путь директории, содержащей директорию conf с шаблонами внутри
@@ -410,16 +425,23 @@ class Command(PatchedTemplateCommand):
         if 'functions' not in self._top_dir_path:
             raise RuntimeError('Path for creating function must contain function directory')
 
-    def _prepare_new_path_file(self, filename, relative_dir):
+    def _prepare_new_path_file(self, filename, relative_dir, options):
         """
         Подготовка пути генерируемого из шаблона файла
         """
-        new_path = super()._prepare_new_path_file(filename, relative_dir)
+        new_path = super()._prepare_new_path_file(filename, relative_dir, options)
 
         if PARAMETERS_DIALOG_WINDOW in new_path:
-            new_path = new_path.replace(PARAMETERS_DIALOG_WINDOW, f'{self.camel_case_value}{PARAMETERS_DIALOG_WINDOW}')
+            if options['is_parameterized']:
+                new_path = new_path.replace(PARAMETERS_DIALOG_WINDOW, f'{self.camel_case_value}{PARAMETERS_DIALOG_WINDOW}')  # noqa
+            else:
+                new_path = None
 
         return new_path
+
+    def _render_file(self, new_path, old_path, filename):
+        if new_path:
+            super()._render_file(new_path, old_path, filename)
 
     def _prepare_base_subdir_parameter(self, app_or_project, options):
         """

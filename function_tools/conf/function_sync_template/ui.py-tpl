@@ -1,3 +1,4 @@
+{% if is_parameterized %}
 from m3_ext.ui.containers import (
     ExtForm,
     ExtToolBar,
@@ -69,3 +70,5 @@ class {{ camel_case_function_name }}ParametersDialogWindow(BaseExtWindow):
                 self.cancel_btn,
             ]
         )
+
+{% endif %}

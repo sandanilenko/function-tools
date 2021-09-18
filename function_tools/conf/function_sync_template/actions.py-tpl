@@ -2,15 +2,19 @@ from m3.actions import (
     Action,
     ActionPack,
 )
+{% if is_parameterized %}
 from m3.actions.urls import (
     get_url,
 )
 from m3_ext.ui.results import (
     ExtUIScriptResult,
 )
+{% endif %}
 
 from web_bb.core.base.api import (
+    {% if is_parameterized %}
     READONLY_CATEGORY,
+    {% endif %}
     WRITE_CATEGORY,
 )
 
@@ -20,6 +24,7 @@ from {{ function_python_path }}.managers import (
 from {{ function_python_path }}.presenters import (
     {{ camel_case_function_name }}ResultPresenter,
 )
+{% if is_parameterized %}
 from {{ function_python_path }}.ui import (
     {{ camel_case_function_name }}ParametersDialogWindow,
 )
@@ -52,7 +57,7 @@ class {{ camel_case_function_name }}ParametersDialogAction(Action):
         win.submit_url = get_url(self.parent.execute_action)
 
         return ExtUIScriptResult(win)
-
+{% endif %}
 
 class {{ camel_case_function_name }}ExecuteAction(Action):
     """
@@ -100,7 +105,7 @@ class {{ camel_case_function_name }}Pack(ActionPack):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        {% if is_parameterized %}
         self.parameters_dialog_action = {{ camel_case_function_name }}ParametersDialogAction()
         self.execute_action = {{ camel_case_function_name }}ExecuteAction()
 
@@ -108,3 +113,10 @@ class {{ camel_case_function_name }}Pack(ActionPack):
             self.parameters_dialog_action,
             self.execute_action,
         ])
+        {% else %}
+        self.execute_action = {{ camel_case_function_name }}ExecuteAction()
+
+        self.actions.extend([
+            self.execute_action,
+        ])
+        {% endif %}
