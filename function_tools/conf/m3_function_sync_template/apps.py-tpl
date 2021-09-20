@@ -3,6 +3,6 @@ from django.apps import (
 )
 
 
-class {{ camel_case_function_name }}Config(AppConfig):
-    name = '{{ function_python_path }}'
+class {{ camel_case_m3_function_name }}Config(AppConfig):
+    name = '{{ m3_function_python_path }}'
     label = '{{ function_verbose_name }}'

@@ -6,15 +6,15 @@ from web_bb.core.users.api import (
     get_current_user_enterprise_id,
 )
 
-from {{ function_python_path }}.helpers import (
-    {{ camel_case_function_name }}FunctionHelper,
+from {{ m3_function_python_path }}.helpers import (
+    {{ camel_case_m3_function_name }}FunctionHelper,
 )
-from {{ function_python_path }}.validators import (
-    {{ camel_case_function_name }}FunctionValidator,
+from {{ m3_function_python_path }}.validators import (
+    {{ camel_case_m3_function_name }}FunctionValidator,
 )
 
 
-class {{ camel_case_function_name }}Function({{ strategy.function_class_name }}):
+class {{ camel_case_m3_function_name }}Function({{ strategy.function_class_name }}):
     """
     Функция "{{ function_verbose_name }}"
     """
@@ -36,7 +36,7 @@ class {{ camel_case_function_name }}Function({{ strategy.function_class_name }})
         """
         Создание помощника выполнения функции
         """
-        self._helper = {{ camel_case_function_name }}FunctionHelper(
+        self._helper = {{ camel_case_m3_function_name }}FunctionHelper(
             ent_id=self._ent_id,
         )
 
@@ -44,7 +44,7 @@ class {{ camel_case_function_name }}Function({{ strategy.function_class_name }})
         """
         Создание валидатора функции
         """
-        self._validator = {{ camel_case_function_name }}FunctionValidator()
+        self._validator = {{ camel_case_m3_function_name }}FunctionValidator()
 
     def _prepare(self):
         """

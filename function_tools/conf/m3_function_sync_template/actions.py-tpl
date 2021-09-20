@@ -18,19 +18,19 @@ from web_bb.core.base.api import (
     WRITE_CATEGORY,
 )
 
-from {{ function_python_path }}.managers import (
-    {{ camel_case_function_name }}RunnerManager,
+from {{ m3_function_python_path }}.managers import (
+    {{ camel_case_m3_function_name }}RunnerManager,
 )
-from {{ function_python_path }}.presenters import (
-    {{ camel_case_function_name }}ResultPresenter,
+from {{ m3_function_python_path }}.presenters import (
+    {{ camel_case_m3_function_name }}ResultPresenter,
 )
 {% if is_parameterized %}
-from {{ function_python_path }}.ui import (
-    {{ camel_case_function_name }}ParametersDialogWindow,
+from {{ m3_function_python_path }}.ui import (
+    {{ camel_case_m3_function_name }}ParametersDialogWindow,
 )
 
 
-class {{ camel_case_function_name }}ParametersDialogAction(Action):
+class {{ camel_case_m3_function_name }}ParametersDialogAction(Action):
     """
     Экшен получения диалогового окна с настройкой параметров функции "{{ function_verbose_name }}"
     """
@@ -52,14 +52,14 @@ class {{ camel_case_function_name }}ParametersDialogAction(Action):
         ]
 
     def run(self, request, context):
-        win = {{ camel_case_function_name }}ParametersDialogWindow()
+        win = {{ camel_case_m3_function_name }}ParametersDialogWindow()
 
         win.submit_url = get_url(self.parent.execute_action)
 
         return ExtUIScriptResult(win)
 {% endif %}
 
-class {{ camel_case_function_name }}ExecuteAction(Action):
+class {{ camel_case_m3_function_name }}ExecuteAction(Action):
     """
     Экшен исполнения функции системы "{{ function_verbose_name }}"
     """
@@ -81,24 +81,24 @@ class {{ camel_case_function_name }}ExecuteAction(Action):
         ]
 
     def run(self, request, context):
-        runner_manager = {{ camel_case_function_name }}RunnerManager()
+        runner_manager = {{ camel_case_m3_function_name }}RunnerManager()
 
         runner_manager.run()
 
-        result = {{ camel_case_function_name }}ResultPresenter(
+        result = {{ camel_case_m3_function_name }}ResultPresenter(
             runnable_result=runner_manager.result,
         ).represent()
 
         return result
 
 
-class {{ camel_case_function_name }}Pack(ActionPack):
+class {{ camel_case_m3_function_name }}Pack(ActionPack):
     """
     Пак с экшенами для работы функции "{{ function_verbose_name }}"
     """
 
-    url = '/{{ function_url_name }}'
-    short_name = '{{ function_name }}'
+    url = '/{{ m3_function_url_name }}'
+    short_name = '{{ m3_function_name }}'
 
     title = '{{ function_verbose_name }}'
     title_plural = '{{ function_verbose_name }}'
@@ -106,15 +106,15 @@ class {{ camel_case_function_name }}Pack(ActionPack):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         {% if is_parameterized %}
-        self.parameters_dialog_action = {{ camel_case_function_name }}ParametersDialogAction()
-        self.execute_action = {{ camel_case_function_name }}ExecuteAction()
+        self.parameters_dialog_action = {{ camel_case_m3_function_name }}ParametersDialogAction()
+        self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
 
         self.actions.extend([
             self.parameters_dialog_action,
             self.execute_action,
         ])
         {% else %}
-        self.execute_action = {{ camel_case_function_name }}ExecuteAction()
+        self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
 
         self.actions.extend([
             self.execute_action,

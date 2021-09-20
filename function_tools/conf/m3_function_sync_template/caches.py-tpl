@@ -6,7 +6,7 @@ from {{ strategy.runner_cache_storage_class_module }} import (
 )
 
 
-class {{ camel_case_function_name }}RunnerCacheStorage({{ strategy.runner_cache_storage_class_name }}):
+class {{ camel_case_m3_function_name }}RunnerCacheStorage({{ strategy.runner_cache_storage_class_name }}):
     """
     Кеш помощника пусковика функции "{{ function_verbose_name }}"
     """
@@ -15,7 +15,7 @@ class {{ camel_case_function_name }}RunnerCacheStorage({{ strategy.runner_cache_
         super().__init__(*args, **kwargs)
 
 
-class {{ camel_case_function_name }}FunctionCacheStorage({{ strategy.function_cache_storage_class_name }}):
+class {{ camel_case_m3_function_name }}FunctionCacheStorage({{ strategy.function_cache_storage_class_name }}):
     """
     Кеш помощника функции "{{ function_verbose_name }}"
     """

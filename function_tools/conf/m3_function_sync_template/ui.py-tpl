@@ -15,7 +15,7 @@ from web_bb.core.base.enums import (
 )
 
 
-class {{ camel_case_function_name }}ParametersDialogWindow(BaseExtWindow):
+class {{ camel_case_m3_function_name }}ParametersDialogWindow(BaseExtWindow):
     """
     Диалоговое окно заполнения параметров функции  "{{ function_verbose_name }}"
     """
@@ -23,7 +23,7 @@ class {{ camel_case_function_name }}ParametersDialogWindow(BaseExtWindow):
     def __init__(self):
         super().__init__()
 
-        self.template_globals = '{{ camel_case_function_name }}ParametersDialogWindow.js'
+        self.template_globals = '{{ camel_case_m3_function_name }}ParametersDialogWindow.js'
         self.title = 'Перенести остатки'
         self.layout = Layout.FIT
         self.form = ExtForm()

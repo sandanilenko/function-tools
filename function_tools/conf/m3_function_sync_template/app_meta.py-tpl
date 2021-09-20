@@ -4,6 +4,10 @@ from <some_path> import (
     <some_controller> as controller,
 )
 
+from {{ m3_function_python_path }}.actions import (
+    {{ camel_case_m3_function_name }}Pack,
+)
+
 
 def register_actions():
     """
@@ -12,6 +16,6 @@ def register_actions():
 
     controller.packs.extend(
         [
-            TransferBalancesPack(),
+            {{ camel_case_m3_function_name }}Pack(),
         ]
     )
