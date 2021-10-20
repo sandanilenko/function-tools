@@ -11,7 +11,7 @@ from setuptools import (
 )
 
 
-__version__ = '0.1.6'
+__version__ = '0.1.8'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -55,6 +55,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     keywords='',
     packages=find_packages(exclude=excluded_packages),

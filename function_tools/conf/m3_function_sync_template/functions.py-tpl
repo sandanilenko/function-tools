@@ -1,0 +1,54 @@
+from {{ strategy.function_class_module }} import (
+    {{ strategy.function_class_name }},
+)
+
+from web_bb.core.users.api import (
+    get_current_user_enterprise_id,
+)
+
+from {{ m3_function_python_path }}.helpers import (
+    {{ camel_case_m3_function_name }}FunctionHelper,
+)
+from {{ m3_function_python_path }}.validators import (
+    {{ camel_case_m3_function_name }}FunctionValidator,
+)
+
+
+class {{ camel_case_m3_function_name }}Function({{ strategy.function_class_name }}):
+    """
+    Функция "{{ function_verbose_name }}"
+    """
+
+    verbose_name = '{{ function_verbose_name }}'
+
+    def __init__(
+        self,
+        *args,
+        **kwargs,
+    ):
+        self._ent_id = get_current_user_enterprise_id()
+
+        super().__init__(*args, **kwargs)
+
+        # self.result.key =
+
+    def _prepare_helper(self):
+        """
+        Создание помощника выполнения функции
+        """
+        self._helper = {{ camel_case_m3_function_name }}FunctionHelper(
+            ent_id=self._ent_id,
+        )
+
+    def _prepare_validator(self):
+        """
+        Создание валидатора функции
+        """
+        self._validator = {{ camel_case_m3_function_name }}FunctionValidator()
+
+    def _prepare(self):
+        """
+        Выполнение действий функций системы
+        """
+        if self.result.has_not_errors:
+            pass
