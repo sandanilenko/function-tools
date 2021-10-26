@@ -9,6 +9,7 @@ from collections import (
 )
 from typing import (
     Deque,
+    List,
     Optional,
 )
 
@@ -36,6 +37,9 @@ class BaseFunction(
 
     # Полное наименование функции для дальнейшей регистрации и отображения пользователю
     verbose_name: str = EMPTY_VERBOSE_NAME
+
+    # Список тегов функции, по которым ее можно в дальнейшем отыскать
+    tags: List[str] = []
 
     @abstractmethod
     def _prepare(self):

@@ -7,6 +7,8 @@ from inspect import (
 )
 from typing import (
     Dict,
+    List,
+    Tuple,
 )
 
 from django.apps import (
@@ -42,7 +44,7 @@ class FunctionRegistrar:
     """
 
     def __init__(self):
-        self._functions: Dict[str, str] = {}
+        self._functions: Dict[str, Tuple[str, List[str]]] = {}
 
         self._registered_functions = RegisteredFunction.objects.all()
         self._registered_functions_map = {
@@ -75,7 +77,7 @@ class FunctionRegistrar:
 
             for app_function in app_functions:
                 self._functions[f'{app_config.module.__name__}.functions.{app_function[0]}'] = (
-                    app_function[1].verbose_name
+                    app_function[1].verbose_name, app_function[1].tags
                 )
 
     def _process_creating_functions(self):
@@ -90,7 +92,8 @@ class FunctionRegistrar:
             for_creating.append(
                 RegisteredFunction(
                     function_path=creating_function_path,
-                    verbose_name=self._functions[creating_function_path],
+                    verbose_name=self._functions[creating_function_path][0],
+                    tags=self._functions[creating_function_path][1],
                 )
             )
 
@@ -103,8 +106,13 @@ class FunctionRegistrar:
         updating_function_paths = filter(lambda f_p: f_p in self._registered_functions_map, self._functions.keys())
 
         for updating_function_path in updating_function_paths:
-            if self._registered_functions_map[updating_function_path].verbose_name != self._functions[updating_function_path]:  # noqa
-                self._registered_functions_map[updating_function_path].verbose_name = self._functions[updating_function_path]  # noqa
+            if (
+                self._registered_functions_map[updating_function_path].verbose_name != self._functions[updating_function_path][0]  # noqa
+                or self._registered_functions_map[updating_function_path].tags != self._functions[updating_function_path][1]  # noqa
+            ):
+                self._registered_functions_map[updating_function_path].verbose_name = self._functions[updating_function_path][0]  # noqa
+                self._registered_functions_map[updating_function_path].tags = self._functions[updating_function_path][1]  # noqa
+
                 # Иду на преступный шаг с генерацией некоторого количества запросов в БД, все только для того, чтобы
                 # изменить дату и время обновления записи
                 self._registered_functions_map[updating_function_path].save()
