@@ -1,4 +1,5 @@
 from m3.actions import (
+    ACD,
     Action,
     ActionPack,
 )
@@ -52,11 +53,11 @@ class {{ camel_case_m3_function_name }}ParametersDialogAction(Action):
         ]
 
     def run(self, request, context):
-        win = {{ camel_case_m3_function_name }}ParametersDialogWindow()
+        window = {{ camel_case_m3_function_name }}ParametersDialogWindow()
 
-        win.submit_url = get_url(self.parent.execute_action)
+        window.submit_url = get_url(self.parent.execute_action)
 
-        return ExtUIScriptResult(win)
+        return ExtUIScriptResult(window)
 {% endif %}
 
 class {{ camel_case_m3_function_name }}ExecuteAction(Action):
@@ -106,7 +107,7 @@ class {{ camel_case_m3_function_name }}Pack(ActionPack):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         {% if is_parameterized %}
-        self.parameters_dialog_action = {{ camel_case_m3_function_name }}ParametersDialogAction()
+        self.start_action = self.parameters_dialog_action = {{ camel_case_m3_function_name }}ParametersDialogAction()
         self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
 
         self.actions.extend([
@@ -114,7 +115,7 @@ class {{ camel_case_m3_function_name }}Pack(ActionPack):
             self.execute_action,
         ])
         {% else %}
-        self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
+        self.start_action = self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
 
         self.actions.extend([
             self.execute_action,
