@@ -1,3 +1,6 @@
+from django.contrib.postgres.fields import (
+    ArrayField,
+)
 from django.db.models import (
     CharField,
     DateTimeField,
@@ -22,6 +25,8 @@ class RegisteredFunction(Model):
         max_length=512,
         default='Имя функции не определено',
     )
+
+    tags = ArrayField(base_field=CharField(max_length=128, blank=True), default=list)
 
     created_at = DateTimeField(
         verbose_name='Дата и время создания',
