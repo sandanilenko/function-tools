@@ -54,7 +54,7 @@ class RunnableObject(
         self._result = BaseRunnableResult()
 
     @abstractmethod
-    def run(self):
+    def run(self, *args, **kwargs):
         """
         Метод запуска выполняемого объекта
         """

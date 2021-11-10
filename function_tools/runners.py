@@ -70,7 +70,7 @@ class BaseRunner(
 
         self._queue.append(runnable)
 
-    def run(self):
+    def run(self, *args, **kwargs):
         """
         Выполнение всех задач стоящих в очереди
         """
@@ -111,7 +111,7 @@ class LazySavingRunner(
             runnable: LazySavingRunnableObject = self._queue_to_save.popleft()
             runnable.do_save()
 
-    def run(self):
+    def run(self, *args, **kwargs):
         """
         Выполнение всех задач стоящих в очереди
         """
@@ -148,7 +148,7 @@ class LazyStrictSavingRunner(
         """
         return BaseError()
 
-    def run(self):
+    def run(self, *args, **kwargs):
         """
         Выполнение всех задач стоящих в очереди
         """
@@ -259,7 +259,7 @@ class LazyDelegateSavingSettableQueueRunner(
     класса и его потомков.
     """
 
-    def do_save(self):
+    def do_save(self, *args, **kwargs):
         """
         Сохранение делегировано пусковику
         """

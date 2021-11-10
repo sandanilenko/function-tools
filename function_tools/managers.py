@@ -24,18 +24,33 @@ class RunnerManager(metaclass=ABCMeta):
     ):
         self._runner: Optional[BaseRunner] = None
 
-    @abstractmethod
-    def _create_runner(self):
-        """
-        Метод создания пусковика
-        """
-
     @property
     def result(self):
         return self._runner.result
 
+    def _before_create_runner(self, *args, **kwargs):
+        """
+        Точка расширения поведения менеджера ранера перед созданием ранера
+        """
+
     @abstractmethod
-    def _prepare_runner(self):
+    def _create_runner(self, *args, **kwargs):
+        """
+        Метод создания пусковика
+        """
+
+    def _after_create_runner(self, *args, **kwargs):
+        """
+        Точка расширения поведения менеджера ранера после создания ранера
+        """
+
+    def _before_prepare_runner(self, *args, **kwargs):
+        """
+        Точка расширения поведения менеджера ранера перед подготовкой ранера
+        """
+
+    @abstractmethod
+    def _prepare_runner(self, *args, **kwargs):
         """
         Метод подготовки пусковика к запуску
 
@@ -43,17 +58,40 @@ class RunnerManager(metaclass=ABCMeta):
         пусковика
         """
 
-    def _start_runner(self):
+    def _after_prepare_runner(self, *args, **kwargs):
+        """
+        Точка расширения поведения менеджера ранера после подготовки ранера
+        """
+
+    def _before_start_runner(self, *args, **kwargs):
+        """
+       Точка расширения поведения менеджера ранера перед запуском ранера
+       """
+
+    def _start_runner(self, *args, **kwargs):
         """
         Точка расширения в месте запуска пусковика
         """
         if self._runner:
-            self._runner.run()
+            self._runner.run(*args, **kwargs)
 
-    def run(self):
-        self._create_runner()
-        self._prepare_runner()
-        self._start_runner()
+    def _after_start_runner(self, *args, **kwargs):
+        """
+       Точка расширения поведения менеджера ранера после запуска ранера
+       """
+
+    def run(self, *args, **kwargs):
+        self._before_create_runner(*args, **kwargs)
+        self._create_runner(*args, **kwargs)
+        self._after_create_runner(*args, **kwargs)
+
+        self._before_prepare_runner(*args, **kwargs)
+        self._prepare_runner(*args, **kwargs)
+        self._after_prepare_runner(*args, **kwargs)
+
+        self._before_start_runner(*args, **kwargs)
+        self._start_runner(*args, **kwargs)
+        self._after_start_runner(*args, **kwargs)
 
 
 class LazySavingRunnerManager(RunnerManager):
@@ -63,12 +101,25 @@ class LazySavingRunnerManager(RunnerManager):
     LazySavingRunner.
     """
 
-    def _do_save(self):
+    def _before_do_save(self, *args, **kwargs):
+        """
+        Точка расширения поведения менеджера ранера перед запуском сохранения объектов
+        """
+
+    def _do_save(self, *args, **kwargs):
         """
         Запуск сохранения у пусковика
         """
-        self._runner.do_save()
+        self._runner.do_save(*args, **kwargs)
 
-    def run(self):
-        super().run()
-        self._do_save()
+    def _after_do_save(self, *args, **kwargs):
+        """
+        Точка расширения поведения менеджера ранера после запуска сохранения объектов
+        """
+
+    def run(self, *args, **kwargs):
+        super().run(*args, **kwargs)
+
+        self._before_do_save(*args, **kwargs)
+        self._do_save(*args, **kwargs)
+        self._after_do_save(*args, **kwargs)
