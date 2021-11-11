@@ -1,5 +1,6 @@
 from typing import (
     Optional,
+    Type,
     Union,
 )
 
@@ -15,19 +16,40 @@ class BaseHelper:
     создаваться кеши и собираться прочая вспомогательная информация, которая
     требуется для исполнения действий
     """
+
     def __init__(self, *args, **kwargs):
-        self.cache: Optional[CacheStorage, BaseCache] = None
+        super().__init__()
 
-        self._create_cache()
+        self._cache_class = self._prepare_cache_class()
 
-    def _create_cache(self):
+        self._cache: Union[Optional[BaseCache], Optional[CacheStorage]] = None
+
+        self._prepare_cache(*args, **kwargs)
+
+    @property
+    def cache(self):
+        """
+        Возвращает кеш помощника
+        """
+        return self._cache
+
+    def _prepare_cache_class(self) -> Union[Optional[Type[BaseCache]], Optional[Type[CacheStorage]]]:
+        """
+        Возвращает класс кеша помощника
+        """
+        return BaseCache
+
+    def _prepare_cache(self, *args, **kwargs):
         """
         Метод создания кеша.
 
         Кеш хранится в публичном свойстве cache. По умолчанию добавлена
         заглушка.
         """
-        self.cache: Union[CacheStorage, BaseCache] = BaseCache()
+        if issubclass(self._cache_class, (BaseCache, CacheStorage)):
+            self._cache = self._cache_class(*args, **kwargs)
+        else:
+            self._cache = BaseCache(*args, **kwargs)
 
 
 class BaseRunnerHelper(BaseHelper):
