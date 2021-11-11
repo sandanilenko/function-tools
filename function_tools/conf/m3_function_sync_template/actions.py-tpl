@@ -44,16 +44,26 @@ class {{ camel_case_m3_function_name }}ParametersDialogAction(Action):
         self.need_atomic = False
         self.category = READONLY_CATEGORY
 
+        self._parameters_dialog_window_class = self._prepare_parameters_dialog_window_class()
+
+    def _prepare_parameters_dialog_window_class(self):
+        """
+        Возвращает класс диалогового окна параметров функции "{{ function_verbose_name }}"
+        """
+        return {{ camel_case_m3_function_name }}ParametersDialogWindow
+
     def context_declaration(self):
         """
         Декларативное описание параметров запроса экшена
         """
-        return [
+        rules = [
             # ACD(),
         ]
 
+        return rules
+
     def run(self, request, context):
-        window = {{ camel_case_m3_function_name }}ParametersDialogWindow()
+        window = self._parameters_dialog_window_class()
 
         window.submit_url = get_url(self.parent.execute_action)
 
@@ -73,20 +83,37 @@ class {{ camel_case_m3_function_name }}ExecuteAction(Action):
         self.need_atomic = False
         self.category = WRITE_CATEGORY
 
+        self._runner_manager_class = self._prepare_manager_class()
+        self._result_presenter_class = self._prepare_result_presenter_class()
+
+    def _prepare_manager_class(self):
+        """
+        Возвращает класс менеджера ранера функции
+        """
+        return {{ camel_case_m3_function_name }}RunnerManager
+
+    def _prepare_result_presenter_class(self):
+        """
+        Возвращает класс презентера результата работы
+        """
+        return {{ camel_case_m3_function_name }}ResultPresenter
+
     def context_declaration(self):
         """
         Декларативное описание параметров запроса экшена
         """
-        return [
+        rules = [
             # ACD(),
         ]
 
+        return rules
+
     def run(self, request, context):
-        runner_manager = {{ camel_case_m3_function_name }}RunnerManager()
+        runner_manager = self._runner_manager_class()
 
         runner_manager.run()
 
-        result = {{ camel_case_m3_function_name }}ResultPresenter(
+        result = self._result_presenter_class(
             runnable_result=runner_manager.result,
         ).represent()
 
@@ -107,17 +134,49 @@ class {{ camel_case_m3_function_name }}Pack(ActionPack):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         {% if is_parameterized %}
-        self.start_action = self.parameters_dialog_action = {{ camel_case_m3_function_name }}ParametersDialogAction()
-        self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
+        self._parameters_dialog_window_action_class = self._prepare_parameters_dialog_window_action_class()
+        self._execute_action_class = self._prepare_execute_action_class()
+
+        self.start_action = self.parameters_dialog_window_action = self._prepare_parameters_dialog_window_action()
+        self.execute_action = self._prepare_execute_action()
 
         self.actions.extend([
-            self.parameters_dialog_action,
+            self.parameters_dialog_window_action,
             self.execute_action,
         ])
         {% else %}
-        self.start_action = self.execute_action = {{ camel_case_m3_function_name }}ExecuteAction()
+        self._execute_action_class = self._prepare_execute_action_class()
+
+        self.start_action = self.execute_action = self._prepare_execute_action()
 
         self.actions.extend([
             self.execute_action,
         ])
-        {% endif %}
+        {% endif %}{% if is_parameterized %}
+    def _prepare_parameters_dialog_window_action_class(self):
+        """
+        Возвращает класс экшена диалогового окна параметров функции "{{ function_verbose_name }}"
+        """
+        return {{ camel_case_m3_function_name }}ParametersDialogAction
+
+    def _prepare_parameters_dialog_window_action(self):
+        """
+        Формирует экшен получения диалогового окна заполнения параметров функции "{{ function_verbose_name }}"
+        """
+        parameters_dialog_window_action = self._parameters_dialog_window_action_class()
+
+        return parameters_dialog_window_action
+    {% endif %}
+    def _prepare_execute_action_class(self):
+        """
+        Возращает класс экшена выполнения функции "{{ function_verbose_name }}"
+        """
+        return {{ camel_case_m3_function_name }}ExecuteAction
+
+    def _prepare_execute_action(self):
+        """
+        Формирует экшен выполнения функции "{{ function_verbose_name }}"
+        """
+        execute_action = self._execute_action_class()
+
+        return execute_action

@@ -23,6 +23,7 @@ class {{ camel_case_m3_function_name }}ParametersDialogWindow(BaseExtWindow):
         super().__init__()
 
         self.template_globals = '{{ camel_case_m3_function_name }}ParametersDialogWindow.js'
+
         self.title = '{{ function_verbose_name }}'
         self.layout = Layout.FIT
         self.form = ExtForm()

@@ -48,6 +48,9 @@ class BaseCache:
     Кеш-заглушка
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
 
 class EntityCache(BaseCache):
     """
@@ -64,6 +67,8 @@ class EntityCache(BaseCache):
         **kwargs,
 
     ):
+        super().__init__(*args, **kwargs)
+
         self._model = model
         self._select_related_fields = select_related_fields
         self._only_fields = only_fields
@@ -392,6 +397,8 @@ class PeriodicalEntityCache(BaseCache):
         searching_key: Union[str, Tuple[str, ...]] = ('pk', ),
         **kwargs,
     ):
+        super().__init__(*args, **kwargs)
+
         if date_from >= date_to:
             raise ValueError(
                 DATE_FROM_MORE_OR_EQUAL_DATE_TO_ERROR
@@ -564,3 +571,6 @@ class CacheStorage(BaseCache):
     содержат кеши в виде публичных свойств, с которыми в дальнейшем удобно
     работать.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

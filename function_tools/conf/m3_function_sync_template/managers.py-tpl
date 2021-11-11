@@ -1,3 +1,7 @@
+from typing import (
+    Type,
+)
+
 from {{ strategy.manager_class_module }} import (
     {{ strategy.manager_class_name }},
 )
@@ -18,11 +22,11 @@ class {{ camel_case_m3_function_name }}RunnerManager(RunnerManager):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def _create_runner(self):
+    def _prepare_runner_class(self) -> Type[{{ camel_case_m3_function_name }}Runner]:
         """
-        Создание пускателя функции "{{ function_verbose_name }}"
+        Возвращает класс ранера
         """
-        self._runner = {{ camel_case_m3_function_name }}Runner()
+        return {{ camel_case_m3_function_name }}Runner
 
     def _prepare_runner(self):
         """

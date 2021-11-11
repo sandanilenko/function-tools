@@ -1,3 +1,7 @@
+from typing import (
+    Type,
+)
+
 from {{ strategy.function_class_module }} import (
     {{ strategy.function_class_name }},
 )
@@ -28,23 +32,24 @@ class {{ camel_case_m3_function_name }}Function({{ strategy.function_class_name 
     ):
         self._ent_id = get_current_user_enterprise_id()
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, ent_id=self._ent_id, **kwargs)
 
+        # Ключ результата работы функции, используется в презентере
         # self.result.key =
+        # Сообщение об успешном выполнении функции
+        # self.result.message =
 
-    def _prepare_helper(self):
+    def _prepare_helper_class(self) -> Type[{{ camel_case_m3_function_name }}FunctionHelper]:
         """
-        Создание помощника выполнения функции
+        Возвращает класс помощника функции
         """
-        self._helper = {{ camel_case_m3_function_name }}FunctionHelper(
-            ent_id=self._ent_id,
-        )
+        return {{ camel_case_m3_function_name }}FunctionHelper
 
-    def _prepare_validator(self):
+    def _prepare_validator_class(self) -> [{{ camel_case_m3_function_name }}FunctionValidator]:
         """
-        Создание валидатора функции
+        Возвращает класс валидатора функции
         """
-        self._validator = {{ camel_case_m3_function_name }}FunctionValidator()
+        return {{ camel_case_m3_function_name }}FunctionValidator
 
     def _prepare(self):
         """

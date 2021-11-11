@@ -4,6 +4,7 @@ from abc import (
 )
 from typing import (
     Optional,
+    Type,
 )
 
 from function_tools.runners import (
@@ -22,6 +23,8 @@ class RunnerManager(metaclass=ABCMeta):
         *args,
         **kwargs,
     ):
+        self._runner_class = self._prepare_runner_class()
+
         self._runner: Optional[BaseRunner] = None
 
     @property
@@ -32,12 +35,20 @@ class RunnerManager(metaclass=ABCMeta):
         """
         Точка расширения поведения менеджера ранера перед созданием ранера
         """
+    def _prepare_runner_class(self) -> Type[BaseRunner]:
+        """
+        Возвращает класс ранера
+        """
+        return BaseRunner
 
-    @abstractmethod
     def _create_runner(self, *args, **kwargs):
         """
         Метод создания пусковика
         """
+        if issubclass(self._runner_class, BaseRunner):
+            self._runner = self._runner_class(*args, **kwargs)
+        else:
+            self._runner = BaseRunner(*args, **kwargs)
 
     def _after_create_runner(self, *args, **kwargs):
         """
