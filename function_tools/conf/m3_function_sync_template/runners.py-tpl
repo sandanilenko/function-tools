@@ -1,3 +1,7 @@
+from typing import (
+    Type,
+)
+
 from {{ strategy.runner_class_module }} import (
     {{ strategy.runner_class_name }},
 )
@@ -22,14 +26,14 @@ class {{ camel_case_m3_function_name }}Runner({{ strategy.runner_class_name }}):
     ):
         super().__init__(*args, **kwargs)
 
-    def _prepare_validator(self):
+    def _prepare_helper_class(self) -> Type[{{ camel_case_m3_function_name }}RunnerHelper]:
         """
-        Создание валидатора пусковика
+        Возвращает класс помощника ранера функции
         """
-        self._validator = {{ camel_case_m3_function_name }}RunnerValidator()
+        return {{ camel_case_m3_function_name }}RunnerHelper
 
-    def _prepare_helper(self):
+    def _prepare_validator_class(self) -> [{{ camel_case_m3_function_name }}RunnerValidator]:
         """
-        Создание помощника пусковика
+        Возвращает класс валидатора ранера функции
         """
-        self._helper = {{ camel_case_m3_function_name }}RunnerHelper()
+        return {{ camel_case_m3_function_name }}RunnerValidator

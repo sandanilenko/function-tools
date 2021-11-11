@@ -48,7 +48,7 @@ class {{ camel_case_m3_function_name }}ParametersDialogAction(Action):
 
     def _prepare_parameters_dialog_window_class(self):
         """
-        Возвращает класс диалогового окна параметров функции
+        Возвращает класс диалогового окна параметров функции "{{ function_verbose_name }}"
         """
         return {{ camel_case_m3_function_name }}ParametersDialogWindow
 
