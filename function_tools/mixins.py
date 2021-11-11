@@ -1,12 +1,12 @@
-from abc import (
-    ABCMeta,
-)
 from typing import (
     Optional,
+    Type,
+    Union,
 )
 
 from function_tools.helpers import (
     BaseFunctionHelper,
+    BaseHelper,
     BaseRunnerHelper,
 )
 from function_tools.validators import (
@@ -14,17 +14,19 @@ from function_tools.validators import (
 )
 
 
-class HelperMixin(metaclass=ABCMeta):
+class HelperMixin:
     """
     Миксин для появления помощника у сущности
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
-        self._helper: Optional[BaseFunctionHelper] = None
+        self._helper_class = self._prepare_helper_class()
 
-        self._prepare_helper()
+        self._helper: Union[Optional[BaseHelper], Optional[BaseFunctionHelper]] = None
+
+        self._prepare_helper(*args, **kwargs)
 
     @property
     def helper(self):
@@ -33,28 +35,44 @@ class HelperMixin(metaclass=ABCMeta):
         """
         return self._helper
 
-    def _prepare_helper(self):
+    def _prepare_helper_class(self) -> Union[Optional[Type[BaseHelper]], Optional[Type[BaseFunctionHelper]]]:
+        """
+        Возвращает класс помощника
+        """
+
+    def _prepare_helper(self, *args, **kwargs):
         """
         Точка расширения для создания помощника.
         """
+        if issubclass(self._helper_class, (BaseHelper, BaseFunctionHelper)):
+            self._helper = self._helper_class(*args, **kwargs)
 
 
-class ValidatorMixin(metaclass=ABCMeta):
+class ValidatorMixin:
     """
     Миксин для появления валидатора у сущности
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
+
+        self._validator_class = self._prepare_validator_class()
 
         self._validator: Optional[BaseValidator] = None
 
-        self._prepare_validator()
+        self._prepare_validator(*args, **kwargs)
 
-    def _prepare_validator(self):
+    def _prepare_validator_class(self) -> Optional[Type[BaseValidator]]:
+        """
+        Возвращает класс валидатор
+        """
+
+    def _prepare_validator(self, *args, **kwargs):
         """
         Точка расширения для создания валидатора
         """
+        if issubclass(self._validator_class, BaseValidator):
+            self._validator = self._validator_class(*args, **kwargs)
 
     def before_validate(self):
         """
@@ -74,12 +92,14 @@ class ValidatorMixin(metaclass=ABCMeta):
         """
 
 
-class GlobalHelperMixin(metaclass=ABCMeta):
+class GlobalHelperMixin:
     """
     Миксин добавляющий возможность установки глобального помощника
     """
     def __init__(self, *args, global_helper=None, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
+
+        self._global_helper_class = self._prepare_global_helper_class()
 
         self._global_helper: Optional[BaseRunnerHelper] = (
             global_helper or
@@ -93,10 +113,17 @@ class GlobalHelperMixin(metaclass=ABCMeta):
         """
         return self._global_helper
 
-    def _prepare_global_helper(self):
+    def _prepare_global_helper_class(self) -> Optional[Type[BaseRunnerHelper]]:
+        """
+        Возвращает класс помощника
+        """
+
+    def _prepare_global_helper(self, *args, **kwargs):
         """
         Предназначен для определения глобального помощника
         """
+        if issubclass(self._global_helper_class, BaseRunnerHelper):
+            self._helper = self._global_helper_class(*args, **kwargs)
 
     def set_global_helper(
         self,
