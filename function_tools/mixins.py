@@ -35,10 +35,11 @@ class HelperMixin:
         """
         return self._helper
 
-    def _prepare_helper_class(self) -> Union[Optional[Type[BaseHelper]], Optional[Type[BaseFunctionHelper]]]:
+    def _prepare_helper_class(self) -> Union[Type[BaseHelper], Type[BaseFunctionHelper]]:
         """
         Возвращает класс помощника
         """
+        return BaseHelper
 
     def _prepare_helper(self, *args, **kwargs):
         """
@@ -62,10 +63,11 @@ class ValidatorMixin:
 
         self._prepare_validator(*args, **kwargs)
 
-    def _prepare_validator_class(self) -> Optional[Type[BaseValidator]]:
+    def _prepare_validator_class(self) -> Type[BaseValidator]:
         """
         Возвращает класс валидатор
         """
+        return BaseValidator
 
     def _prepare_validator(self, *args, **kwargs):
         """
@@ -113,10 +115,11 @@ class GlobalHelperMixin:
         """
         return self._global_helper
 
-    def _prepare_global_helper_class(self) -> Optional[Type[BaseRunnerHelper]]:
+    def _prepare_global_helper_class(self) -> Type[BaseRunnerHelper]:
         """
         Возвращает класс помощника
         """
+        return BaseRunnerHelper
 
     def _prepare_global_helper(self, *args, **kwargs):
         """
