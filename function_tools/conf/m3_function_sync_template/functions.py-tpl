@@ -30,21 +30,40 @@ class {{ camel_case_m3_function_name }}Function({{ strategy.function_class_name 
 
         super().__init__(*args, **kwargs)
 
+        # Ключ результата работы функции, используется в презентере
         # self.result.key =
+        # Сообщение об успешном выполнении функции
+        # self.result.message =
+
+    def _prepare_helper_class(self):
+        """
+        Возвращает класс помощника функции
+        """
+        return {{ camel_case_m3_function_name }}FunctionHelper
 
     def _prepare_helper(self):
         """
         Создание помощника выполнения функции
         """
-        self._helper = {{ camel_case_m3_function_name }}FunctionHelper(
+        helper_class = self._prepare_helper_class()
+
+        self._helper = helper_class(
             ent_id=self._ent_id,
         )
+
+    def _prepare_validator_class(self):
+        """
+        Возвращает класс валидатора функции
+        """
+        return {{ camel_case_m3_function_name }}FunctionValidator
 
     def _prepare_validator(self):
         """
         Создание валидатора функции
         """
-        self._validator = {{ camel_case_m3_function_name }}FunctionValidator()
+        validator_class = self._prepare_validator_class()
+
+        self._validator = validator_class()
 
     def _prepare(self):
         """
