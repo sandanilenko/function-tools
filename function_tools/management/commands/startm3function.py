@@ -36,24 +36,17 @@ from isort.settings import (
 )
 
 import function_tools
-from function_tools.functions import (
-    BaseFunction,
-    LazyDelegateSavingPredefinedQueueFunction,
-    LazySavingPredefinedQueueFunction,
-)
 from function_tools.management.consts import (
     PARAMETERS_DIALOG_WINDOW,
 )
 from function_tools.management.enums import (
     FunctionTypeEnum,
-    ImplementationStrategyEnum,
 )
 from function_tools.management.strategies import (
     ImplementationStrategyFactory,
 )
-from function_tools.runners import (
-    BaseRunner,
-    LazySavingRunner,
+from function_tools.models import (
+    ImplementationStrategy,
 )
 
 
@@ -359,32 +352,31 @@ class Command(PatchedTemplateCommand):
 
     missing_args_message = "Вы должны указать наименование функции."
 
-    def __init__(self, *args, **kwargs):
-        self._strategies = self._prepare_strategies()
-
-        super().__init__(*args, **kwargs)
-
     def add_arguments(self, parser):
         """
         Добавление параметров команды
         """
         super().add_arguments(parser)
 
+        strategy_help = '\n'.join([
+            f'{strategy.key} - {strategy.title};'
+            for strategy in ImplementationStrategy.get_enum_data().values()
+        ])
+
         parser.add_argument(
             '--strategy',
             dest='strategy',
             action='store',
-            type=lambda s: ImplementationStrategyEnum(int(s)),
+            type=lambda s: str(s).upper(),
             help=(
-                """
+                f"""
                 Стратегия реализации Функции.
                 
-                1 - простая Функция без отложенного сохранения;
-                2 - Функция с отложенным сохранением запускаемым самой функцией
-                3 - Функция с отложенным сохранением делегированным пускателю запуском 
+                Может принимать следующие значения:
+                {strategy_help} 
                 """
             ),
-            default=ImplementationStrategyEnum.BASE_RUNNER_LAZY_SAVING_PREDEFINED_QUEUE_FUNCTION,
+            default=ImplementationStrategy.LAZY_SAVING_FUNCTION.key,
         )
 
         parser.add_argument(
@@ -476,28 +468,15 @@ class Command(PatchedTemplateCommand):
             'django_version': django.__version__,
         }, autoescape=False)
 
-    def _prepare_strategies(self):
-        """
-        Подготовка стратегий реализзации функций
-
-        Returns:
-            Возвращает словарь, состоящий из идентификатора стратегии реализации функции и списком со словарем
-        """
-        return {
-            1: [BaseRunner, BaseFunction],
-            2: [BaseRunner, LazySavingPredefinedQueueFunction],
-            3: [LazySavingRunner, LazyDelegateSavingPredefinedQueueFunction],
-        }
-
     def handle(self, **options):
         function_name = options.pop('name')
         target = options.pop('directory')
 
-        enum_strategy = options.pop('strategy')
+        strategy_key = options.pop('strategy')
 
         strategy_factory = ImplementationStrategyFactory()
         strategy = strategy_factory.get_strategy_implementation(
-            enum_strategy=enum_strategy,
+            strategy_key=strategy_key,
         )
 
         options['strategy'] = strategy
