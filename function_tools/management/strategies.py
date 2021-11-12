@@ -65,7 +65,8 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         self._runner_cache_storage_class = None
         self._function_cache_storage_class = None
         self._error_class = None
-        self._result_class = None
+        self._runner_result_class = None
+        self._function_result_class = None
         self._result_presenter_class = None
 
         self._prepare()
@@ -191,16 +192,28 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         return self._error_class.__module__
 
     @property
-    def result_class(self):
-        return self._result_class
+    def runner_result_class(self):
+        return self._runner_result_class
 
     @property
-    def result_class_name(self):
-        return self._result_class.__name__
+    def runner_result_class_name(self):
+        return self._runner_result_class.__name__
 
     @property
-    def result_class_module(self):
-        return self._result_class.__module__
+    def runner_result_class_module(self):
+        return self._runner_result_class.__module__
+
+    @property
+    def function_result_class(self):
+        return self._function_result_class
+
+    @property
+    def function_result_class_name(self):
+        return self._function_result_class.__name__
+
+    @property
+    def function_result_class_module(self):
+        return self._function_result_class.__module__
 
     @property
     def result_presenter_class(self):
@@ -274,11 +287,17 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         """
         self._error_class = BaseError
 
-    def _prepare_result_class(self):
+    def _prepare_runner_result_class(self):
         """
         Устанавливает класс результата
         """
-        self._result_class = BaseRunnableResult
+        self._runner_result_class = BaseRunnableResult
+
+    def _prepare_function_result_class(self):
+        """
+        Устанавливает класс результата
+        """
+        self._function_result_class = BaseRunnableResult
 
     def _prepare_result_presenter_class(self):
         """
@@ -300,7 +319,8 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         self._prepare_function_cache_storage_class()
         self._prepare_runner_cache_storage_class()
         self._prepare_error_class()
-        self._prepare_result_class()
+        self._prepare_runner_result_class()
+        self._prepare_function_result_class()
         self._prepare_result_presenter_class()
 
 

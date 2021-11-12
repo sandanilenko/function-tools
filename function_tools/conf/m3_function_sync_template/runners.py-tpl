@@ -9,6 +9,9 @@ from {{ strategy.runner_class_module }} import (
 from {{ m3_function_python_path }}.helpers import (
     {{ camel_case_m3_function_name }}RunnerHelper,
 )
+from {{ m3_function_python_path }}.results import (
+    {{ camel_case_m3_function_name }}RunnerResult,
+)
 from {{ m3_function_python_path }}.validators import (
     {{ camel_case_m3_function_name }}RunnerValidator,
 )
@@ -37,3 +40,9 @@ class {{ camel_case_m3_function_name }}Runner({{ strategy.runner_class_name }}):
         Возвращает класс валидатора ранера функции
         """
         return {{ camel_case_m3_function_name }}RunnerValidator
+
+    def _prepare_result_class(self) -> Type[{{ camel_case_m3_function_name }}RunnerResult]:
+        """
+        Возвращает класс результата пусковика функции
+        """
+        return {{ camel_case_m3_function_name }}RunnerResult
