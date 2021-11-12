@@ -103,7 +103,7 @@ class GlobalHelperMixin:
 
         self._global_helper_class = self._prepare_global_helper_class()
 
-        self._global_helper: Optional[BaseRunnerHelper] = (
+        self._global_helper: BaseRunnerHelper = (
             global_helper or
             self._prepare_global_helper()
         )
@@ -126,7 +126,11 @@ class GlobalHelperMixin:
         Предназначен для определения глобального помощника
         """
         if issubclass(self._global_helper_class, BaseRunnerHelper):
-            self._helper = self._global_helper_class(*args, **kwargs)
+            global_helper = self._global_helper_class(*args, **kwargs)
+        else:
+            global_helper = BaseRunnerHelper()
+
+        return global_helper
 
     def set_global_helper(
         self,
