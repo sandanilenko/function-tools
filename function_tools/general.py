@@ -8,6 +8,7 @@ from collections import (
 from typing import (
     Deque,
     Optional,
+    Type,
 )
 
 from django.db import (
@@ -39,19 +40,30 @@ class RunnableObject(
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self._result_class = self._prepare_result_class()
+
         self._result: Optional[BaseRunnableResult] = None
 
         self._prepare_result()
+
+    def _prepare_result_class(self) -> Type[BaseRunnableResult]:
+        """
+        Возвращает класс результата работы ранера
+        """
+        return BaseRunnableResult
 
     @property
     def result(self) -> BaseRunnableResult:
         return self._result
 
-    def _prepare_result(self):
+    def _prepare_result(self, *args, **kwargs):
         """
         Метод подготовки результата
         """
-        self._result = BaseRunnableResult()
+        if issubclass(self._result_class, BaseRunnableResult):
+            self._result = self._result_class(*args, **kwargs)
+        else:
+            self._result = BaseRunnableResult(*args, **kwargs)
 
     @abstractmethod
     def run(self, *args, **kwargs):

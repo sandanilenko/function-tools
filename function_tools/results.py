@@ -13,7 +13,7 @@ class BaseRunnableResult:
     Базовый класс результататов выполнения запускаемых объектов
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         # Ключ результата, используемый для идентификации результата
         self._key = ''
         self._message = ''
