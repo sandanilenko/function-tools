@@ -21,14 +21,14 @@ from function_tools.helpers import (
     BaseFunctionHelper,
     BaseRunnerHelper,
 )
-from function_tools.management.enums import (
-    ImplementationStrategyEnum,
-)
 from function_tools.management.signals import (
     implementation_strategy_factory_after_init_signal,
 )
 from function_tools.managers import (
     RunnerManager,
+)
+from function_tools.models import (
+    ImplementationStrategy,
 )
 from function_tools.presenters import (
     ResultPresenter,
@@ -65,7 +65,8 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         self._runner_cache_storage_class = None
         self._function_cache_storage_class = None
         self._error_class = None
-        self._result_class = None
+        self._runner_result_class = None
+        self._function_result_class = None
         self._result_presenter_class = None
 
         self._prepare()
@@ -191,16 +192,28 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         return self._error_class.__module__
 
     @property
-    def result_class(self):
-        return self._result_class
+    def runner_result_class(self):
+        return self._runner_result_class
 
     @property
-    def result_class_name(self):
-        return self._result_class.__name__
+    def runner_result_class_name(self):
+        return self._runner_result_class.__name__
 
     @property
-    def result_class_module(self):
-        return self._result_class.__module__
+    def runner_result_class_module(self):
+        return self._runner_result_class.__module__
+
+    @property
+    def function_result_class(self):
+        return self._function_result_class
+
+    @property
+    def function_result_class_name(self):
+        return self._function_result_class.__name__
+
+    @property
+    def function_result_class_module(self):
+        return self._function_result_class.__module__
 
     @property
     def result_presenter_class(self):
@@ -274,11 +287,17 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         """
         self._error_class = BaseError
 
-    def _prepare_result_class(self):
+    def _prepare_runner_result_class(self):
         """
         Устанавливает класс результата
         """
-        self._result_class = BaseRunnableResult
+        self._runner_result_class = BaseRunnableResult
+
+    def _prepare_function_result_class(self):
+        """
+        Устанавливает класс результата
+        """
+        self._function_result_class = BaseRunnableResult
 
     def _prepare_result_presenter_class(self):
         """
@@ -300,7 +319,8 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         self._prepare_function_cache_storage_class()
         self._prepare_runner_cache_storage_class()
         self._prepare_error_class()
-        self._prepare_result_class()
+        self._prepare_runner_result_class()
+        self._prepare_function_result_class()
         self._prepare_result_presenter_class()
 
 
@@ -351,33 +371,33 @@ class ImplementationStrategyFactory:
 
         implementation_strategy_factory_after_init_signal.send(self)
 
-    def _prepare_implementation_strategy_map(self) -> Dict[ImplementationStrategyEnum, Type[FunctionImplementationStrategy]]:  # noqa
+    def _prepare_implementation_strategy_map(self) -> Dict[str, Type[FunctionImplementationStrategy]]:  # noqa
         """
         Создание карты соответствия стратегий реализации функции
         """
         strategy_map = {
-            ImplementationStrategyEnum.BASE_RUNNER_BASE_FUNCTION: BaseRunnerBaseFunctionImplementationStrategy,
-            ImplementationStrategyEnum.BASE_RUNNER_LAZY_SAVING_PREDEFINED_QUEUE_FUNCTION: BaseRunnerLazySavingPredefinedQueueFunctionImplementationStrategy,  # noqa
-            ImplementationStrategyEnum.LAZY_SAVING_RUNNER_LAZY_DELEGATE_SAVING_PREDEFINED_QUEUE_FUNCTION: LazySavingRunnerLazyDelegateSavingPredefinedQueueFunctionImplementationStrategy, # noqa
+            ImplementationStrategy.BASE_FUNCTION.key: BaseRunnerBaseFunctionImplementationStrategy,
+            ImplementationStrategy.LAZY_SAVING_FUNCTION.key: BaseRunnerLazySavingPredefinedQueueFunctionImplementationStrategy,  # noqa
+            ImplementationStrategy.LAZY_SAVING_RUNNER_FUNCTION.key: LazySavingRunnerLazyDelegateSavingPredefinedQueueFunctionImplementationStrategy, # noqa
         }
 
         return strategy_map
 
     def patch_implementation_strategy_map(
         self,
-        enum_strategy: ImplementationStrategyEnum,
+        strategy_key: str,
         strategy_class: Type[FunctionImplementationStrategy],
     ):
         """
         Публичный метод для патчинга карты соответствия стратегии реализации функций
         """
-        self._implementation_strategy_map[enum_strategy] = strategy_class
+        self._implementation_strategy_map[strategy_key] = strategy_class
 
     def get_strategy_implementation(
         self,
-        enum_strategy: ImplementationStrategyEnum,
+        strategy_key: str,
     ):
         """
         Возвращает стратегию реализации функции по значению перечисления
         """
-        return self._implementation_strategy_map[enum_strategy]()
+        return self._implementation_strategy_map[strategy_key]()
