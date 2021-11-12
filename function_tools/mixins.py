@@ -47,6 +47,8 @@ class HelperMixin:
         """
         if issubclass(self._helper_class, (BaseHelper, BaseFunctionHelper)):
             self._helper = self._helper_class(*args, **kwargs)
+        else:
+            self._helper = BaseHelper(*args, **kwargs)
 
 
 class ValidatorMixin:
@@ -75,6 +77,8 @@ class ValidatorMixin:
         """
         if issubclass(self._validator_class, BaseValidator):
             self._validator = self._validator_class(*args, **kwargs)
+        else:
+            self._validator = BaseValidator(*args, **kwargs)
 
     def before_validate(self):
         """
