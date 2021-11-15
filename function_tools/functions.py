@@ -11,6 +11,7 @@ from typing import (
     Deque,
     List,
     Optional,
+    Union,
 )
 
 from function_tools.consts import (
@@ -19,6 +20,11 @@ from function_tools.consts import (
 from function_tools.general import (
     LazySavingActionModelRunnableObject,
     RunnableObject,
+)
+from function_tools.helpers import (
+    BaseFunctionHelper,
+    BaseHelper,
+    BaseRunnerHelper,
 )
 from function_tools.mixins import (
     GlobalHelperMixin,
@@ -40,6 +46,11 @@ class BaseFunction(
 
     # Список тегов функции, по которым ее можно в дальнейшем отыскать
     tags: List[str] = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._helper: Union[BaseHelper, BaseFunctionHelper] = self._prepare_helper(*args, **kwargs)
 
     @abstractmethod
     def _prepare(self):
@@ -89,7 +100,7 @@ class LazySavingFunction(
 
     def run(self):
         """
-        Выполение действий функции с дальнейшим сохранением объектов в базу
+        Выполнение действий функции с дальнейшим сохранением объектов в базу
         при отсутствии ошибок или явном указании игнорирования ошибок при сохранении
         """
         self._prepare()
@@ -104,7 +115,7 @@ class LazySavingPredefinedQueueFunction(
 ):
     """
     Базовый класс для создания функций с отложенным сохранением объектов
-    моделей с предустрановленной очередью
+    моделей с предустановленной очередью
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -122,6 +133,11 @@ class LazySavingPredefinedQueueGlobalHelperFunction(
     предустановленной очередью на сохранение и глобальным помощником
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)
+
 
 class LazyDelegateSavingPredefinedQueueFunction(
     LazySavingPredefinedQueueFunction,
@@ -132,7 +148,7 @@ class LazyDelegateSavingPredefinedQueueFunction(
     делегированным пусковику сохранением. В рамках функции производится
     наполнение очереди сохраняемых объектов, но сохранение будет производиться
     на уровне пусковика в открытой транзакции. Это требуется, когда функции
-    должны выполняться цепочкой в рамках одной транзакции  для достижения
+    должны выполняться цепочкой в рамках одной транзакции для достижения
     атомарности.
     """
 
@@ -161,6 +177,11 @@ class LazyDelegateSavingPredefinedQueueGlobalHelperFunction(
     предустановленной очередью, делегированным сохранением объектов пускателю и
     глобальным помощником
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)
 
 
 class LazySavingSettableQueueFunction(
@@ -200,6 +221,11 @@ class LazySavingSettableQueueGlobalHelperFunction(
     устанавливаемой очередью и глобальным помощником
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)
+
 
 class LazyDelegateSavingSettableQueueFunction(
     LazySavingSettableQueueFunction,
@@ -210,7 +236,7 @@ class LazyDelegateSavingSettableQueueFunction(
     делегированным пусковику сохранением. В рамках функции производится
     наполнение очереди сохраняемых объектов, но сохранение будет производиться
     на уровне пусковика в открытой транзакции. Это требуется, когда функции
-    должны выполняться цепочкой в рамках одной транзакции  для достижения
+    должны выполняться цепочкой в рамках одной транзакции для достижения
     атомарности. Используется в связке с LazySavingGeneralQueueRunner и его
     наследниками.
     """
@@ -237,3 +263,8 @@ class LazyDelegateSavingSettableQueueGlobalHelperFunction(
     устанавливаемой очередью, делегированным сохранением объектов пускателю и
     глобальным помощником. Используется в связке с LazySavingGeneralQueueRunner.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)

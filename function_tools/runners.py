@@ -21,6 +21,10 @@ from function_tools.general import (
     LazySavingRunnableObject,
     RunnableObject,
 )
+from function_tools.helpers import (
+    BaseHelper,
+    BaseRunnerHelper,
+)
 from function_tools.mixins import (
     GlobalHelperMixin,
     HelperMixin,
@@ -39,6 +43,7 @@ class BaseRunner(
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self._helper: Union[BaseHelper, BaseRunnerHelper] = self._prepare_helper(*args, **kwargs)
         self._queue: Deque[RunnableObject] = deque()
 
     def _prepare_runnable_before_enqueue(
@@ -48,7 +53,7 @@ class BaseRunner(
         """
         Подготовка запускаемого объекта к работе.
 
-        В данной точне расширения можно пропатчить объект через публичные методы
+        В данной точке расширения можно пропатчить объект через публичные методы
         """
         if isinstance(runnable, GlobalHelperMixin):
             runnable.set_global_helper(
@@ -188,6 +193,11 @@ class GlobalHelperRunner(
     глобальным помощником
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)
+
 
 class LazySavingGlobalHelperRunner(
     GlobalHelperMixin,
@@ -199,6 +209,11 @@ class LazySavingGlobalHelperRunner(
     объектов с глобальным помощником
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)
+
 
 class LazyStrictSavingGlobalHelperRunner(
     GlobalHelperMixin,
@@ -206,9 +221,14 @@ class LazyStrictSavingGlobalHelperRunner(
     metaclass=ABCMeta,
 ):
     """
-    Абстрактный класс для создания классов пусковиков с отложенным сохранением
-    объектов в строгом режиме c глобальным помощником
+    Абстрактный класс для создания классов пусковиков с отложенным сохранением объектов в строгом режиме c
+    глобальным помощником
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._global_helper: BaseRunnerHelper = self._prepare_global_helper(*args, **kwargs)
 
 
 class LazySavingSettableQueueRunner(
