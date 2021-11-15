@@ -7,7 +7,6 @@ from collections import (
 )
 from typing import (
     Deque,
-    Optional,
     Type,
 )
 
@@ -27,6 +26,9 @@ from function_tools.results import (
 from function_tools.utils import (
     rebind_model_rel_id,
 )
+from function_tools.validators import (
+    BaseValidator,
+)
 
 
 class RunnableObject(
@@ -38,13 +40,8 @@ class RunnableObject(
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._result_class = self._prepare_result_class()
-
-        self._result: Optional[BaseRunnableResult] = None
-
-        self._prepare_result()
+        self._validator: BaseValidator = self._prepare_validator(*args, **kwargs)
+        self._result: BaseRunnableResult = self._prepare_result(*args, **kwargs)
 
     def _prepare_result_class(self) -> Type[BaseRunnableResult]:
         """
@@ -60,10 +57,14 @@ class RunnableObject(
         """
         Метод подготовки результата
         """
-        if issubclass(self._result_class, BaseRunnableResult):
-            self._result = self._result_class(*args, **kwargs)
+        result_class = self._prepare_result_class()
+
+        if issubclass(result_class, BaseRunnableResult):
+            result = result_class(*args, **kwargs)
         else:
-            self._result = BaseRunnableResult(*args, **kwargs)
+            result = BaseRunnableResult(*args, **kwargs)
+
+        return result
 
     @abstractmethod
     def run(self, *args, **kwargs):
