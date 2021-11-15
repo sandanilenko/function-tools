@@ -119,7 +119,7 @@ class LazySavingRunnerManager(RunnerManager):
 
     def _do_save(self, *args, **kwargs):
         """
-        Запуск сохранения у пусковика
+        Запуск сохранения пусковика
         """
         self._runner.do_save(*args, **kwargs)
 
