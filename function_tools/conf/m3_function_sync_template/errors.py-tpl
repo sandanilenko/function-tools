@@ -7,6 +7,3 @@ class {{ camel_case_m3_function_name }}Error({{ strategy.error_class_name }}):
     """
     Ошибка работы функции "{{ function_verbose_name }}"
     """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)

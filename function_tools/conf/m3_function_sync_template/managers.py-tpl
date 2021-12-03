@@ -19,9 +19,6 @@ class {{ camel_case_m3_function_name }}RunnerManager(RunnerManager):
     Менеджер пускателя функций системы "{{ function_verbose_name }}"
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def _prepare_runner_class(self) -> Type[{{ camel_case_m3_function_name }}Runner]:
         """
         Возвращает класс ранера
