@@ -12,7 +12,7 @@ class {{ camel_case_m3_function_name }}RunnerValidator({{ strategy.runner_valida
     """
 
     def validate(self, runnable):
-        pass
+        super().validate(runnable=runnable)
 
 
 class {{ camel_case_m3_function_name }}FunctionValidator({{ strategy.function_validator_class_name }}):
@@ -21,4 +21,4 @@ class {{ camel_case_m3_function_name }}FunctionValidator({{ strategy.function_va
     """
 
     def validate(self, runnable):
-        pass
+        super().validate(runnable=runnable)
