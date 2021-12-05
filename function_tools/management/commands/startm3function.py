@@ -241,7 +241,12 @@ class PatchedTemplateCommand(TemplateCommand):
         template_dir = self.handle_template(options['template'], self.base_subdir)
         prefix_length = len(template_dir) + 1
 
-        for root, dirs, files in os.walk(template_dir):
+        template_dir_items = [(root, dirs, files) for root, dirs, files in os.walk(template_dir)]
+
+        if not template_dir_items:
+            raise CommandError('Please, check template directory, because directory is empty!')
+
+        for root, dirs, files in template_dir_items:
 
             path_rest = root[prefix_length:]
             relative_dir = path_rest.replace(self.base_name, self.name)
