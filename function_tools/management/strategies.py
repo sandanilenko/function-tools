@@ -1,9 +1,9 @@
 from abc import (
-    ABCMeta,
+    ABC,
+    abstractmethod,
 )
 from typing import (
-    Dict,
-    Type,
+    Optional,
 )
 
 from function_tools.caches import (
@@ -21,14 +21,8 @@ from function_tools.helpers import (
     BaseFunctionHelper,
     BaseRunnerHelper,
 )
-from function_tools.management.signals import (
-    implementation_strategy_factory_after_init_signal,
-)
 from function_tools.managers import (
     RunnerManager,
-)
-from function_tools.models import (
-    ImplementationStrategy,
 )
 from function_tools.presenters import (
     ResultPresenter,
@@ -45,7 +39,7 @@ from function_tools.validators import (
 )
 
 
-class FunctionImplementationStrategy(metaclass=ABCMeta):
+class FunctionImplementationStrategy(ABC):
     """
     Базовый класс стратегии реализации функции
     """
@@ -69,7 +63,32 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         self._function_result_class = None
         self._result_presenter_class = None
 
+        self._key = self._prepare_key()
+        self._title = self._prepare_title()
+        self._function_template_name = self._prepare_function_template_name()
+
         self._prepare()
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+        Возвращает уникальный идентификатор стратегии создания функции
+        """
+        return self._key
+
+    @property
+    def title(self) -> Optional[str]:
+        """
+        Возвращает название стратегии создания функции
+        """
+        return self._title
+
+    @property
+    def function_template_name(self) -> Optional[str]:
+        """
+        Возвращает наименование стратегии реализации функции
+        """
+        return self._function_template_name
 
     @property
     def manager_class(self):
@@ -227,6 +246,23 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
     def result_presenter_class_module(self):
         return self._result_presenter_class.__module__
 
+    @abstractmethod
+    def _prepare_key(self) -> Optional[str]:
+        """
+        Формирование уникального ключа стратегии создания функции
+        """
+
+    @abstractmethod
+    def _prepare_title(self) -> Optional[str]:
+        """
+        Формирование наименования стратегии создания функции
+        """
+    @abstractmethod
+    def _prepare_function_template_name(self) -> Optional[str]:
+        """
+        Формирование названия шаблона создания функции
+        """
+
     def _prepare_manager_class(self):
         """
         Устанавливает класс менеджера
@@ -301,7 +337,7 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
 
     def _prepare_result_presenter_class(self):
         """
-        Устанавливает класс ппрезентера результата
+        Устанавливает класс презентера результата
         """
         self._result_presenter_class = ResultPresenter
 
@@ -324,16 +360,55 @@ class FunctionImplementationStrategy(metaclass=ABCMeta):
         self._prepare_result_presenter_class()
 
 
-class BaseRunnerBaseFunctionImplementationStrategy(FunctionImplementationStrategy):
+class SyncBaseRunnerBaseFunctionImplementationStrategy(FunctionImplementationStrategy):
     """
     Реализация простой функции без отложенного сохранения
     """
 
+    def _prepare_key(self) -> str:
+        """
+        Возвращает уникальный идентификатор стратегии создания функции
+        """
+        return 'SYNC_BASE_FUNCTION'
 
-class BaseRunnerLazySavingPredefinedQueueFunctionImplementationStrategy(FunctionImplementationStrategy):
+    def _prepare_title(self) -> str:
+        """
+        Возвращает название стратегии создания функции
+        """
+        return 'Реализация простой функции без отложенного сохранения'
+
+    def _prepare_function_template_name(self) -> Optional[str]:
+        """
+        Формирование названия шаблона создания функции
+        """
+        return 'm3_function_sync_template'
+
+
+class SyncBaseRunnerLazySavingPredefinedQueueFunctionImplementationStrategy(FunctionImplementationStrategy):
     """
     Реализация функции с отложенным сохранением и предустановленной очередью объектов на сохранение
     """
+
+    def _prepare_key(self) -> str:
+        """
+        Возвращает уникальный идентификатор стратегии создания функции
+        """
+        return 'SYNC_LAZY_SAVING_FUNCTION'
+
+    def _prepare_title(self) -> str:
+        """
+        Возвращает название стратегии создания функции
+        """
+        return (
+            'Реализация функции с отложенным сохранением и предустановленной очередью объектов на сохранение. '
+            'Сохранение производится после удачной работы функции'
+        )
+
+    def _prepare_function_template_name(self) -> Optional[str]:
+        """
+        Формирование названия шаблона создания функции
+        """
+        return 'm3_function_sync_template'
 
     def _prepare_function_class(self):
         """
@@ -342,11 +417,32 @@ class BaseRunnerLazySavingPredefinedQueueFunctionImplementationStrategy(Function
         self._function_class = LazySavingPredefinedQueueFunction
 
 
-class LazySavingRunnerLazyDelegateSavingPredefinedQueueFunctionImplementationStrategy(FunctionImplementationStrategy):
+class SyncLazySavingRunnerLazyDelegateSavingPredefinedQueueFunctionImplementationStrategy(FunctionImplementationStrategy):
     """
     Реализация функции с отложенным сохранением его делегированием пускателю. Когда все функции отработают, только
     после этого запускается сохранение объектов из очередей каждой функции
     """
+
+    def _prepare_key(self) -> str:
+        """
+        Возвращает уникальный идентификатор стратегии создания функции
+        """
+        return 'SYNC_LAZY_SAVING_RUNNER_FUNCTION'
+
+    def _prepare_title(self) -> str:
+        """
+        Возвращает название стратегии создания функции
+        """
+        return (
+            'Реализация функции с отложенным сохранением его делегированием пускателю. Когда все функции отработают, '
+            'только после этого запускается сохранение объектов из очередей каждой функции'
+        )
+
+    def _prepare_function_template_name(self) -> Optional[str]:
+        """
+        Формирование названия шаблона создания функции
+        """
+        return 'm3_function_sync_template'
 
     def _prepare_runner_class(self):
         """
@@ -359,45 +455,3 @@ class LazySavingRunnerLazyDelegateSavingPredefinedQueueFunctionImplementationStr
         Устанавливает класс Функции
         """
         self._function_class = LazyDelegateSavingPredefinedQueueFunction
-
-
-class ImplementationStrategyFactory:
-    """
-    Фабрика стратегий реализации
-    """
-
-    def __init__(self):
-        self._implementation_strategy_map = self._prepare_implementation_strategy_map()
-
-        implementation_strategy_factory_after_init_signal.send(self)
-
-    def _prepare_implementation_strategy_map(self) -> Dict[str, Type[FunctionImplementationStrategy]]:  # noqa
-        """
-        Создание карты соответствия стратегий реализации функции
-        """
-        strategy_map = {
-            ImplementationStrategy.BASE_FUNCTION.key: BaseRunnerBaseFunctionImplementationStrategy,
-            ImplementationStrategy.LAZY_SAVING_FUNCTION.key: BaseRunnerLazySavingPredefinedQueueFunctionImplementationStrategy,  # noqa
-            ImplementationStrategy.LAZY_SAVING_RUNNER_FUNCTION.key: LazySavingRunnerLazyDelegateSavingPredefinedQueueFunctionImplementationStrategy, # noqa
-        }
-
-        return strategy_map
-
-    def patch_implementation_strategy_map(
-        self,
-        strategy_key: str,
-        strategy_class: Type[FunctionImplementationStrategy],
-    ):
-        """
-        Публичный метод для патчинга карты соответствия стратегии реализации функций
-        """
-        self._implementation_strategy_map[strategy_key] = strategy_class
-
-    def get_strategy_implementation(
-        self,
-        strategy_key: str,
-    ):
-        """
-        Возвращает стратегию реализации функции по значению перечисления
-        """
-        return self._implementation_strategy_map[strategy_key]()
