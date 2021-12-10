@@ -45,9 +45,6 @@ import function_tools
 from function_tools.management.consts import (
     PARAMETERS_DIALOG_WINDOW,
 )
-from function_tools.management.enums import (
-    FunctionTypeEnum,
-)
 from function_tools.management.storages import (
     ImplementationStrategyStorage,
 )
@@ -104,7 +101,7 @@ class PatchedTemplateCommand(TemplateCommand):
             config=getattr(settings, 'ISORT_CONFIG') or DEFAULT_CONFIG,
         )
 
-    def handle_template(self, template, subdir):
+    def handle_template(self, template=None, subdir=None):
         """
         Поиск директории с шаблоном функции
         """
@@ -240,7 +237,7 @@ class PatchedTemplateCommand(TemplateCommand):
             )
 
     def _create_package_by_template(self, options):
-        template_dir = str(self.handle_template(options['template'], self.base_subdir))
+        template_dir = str(self.handle_template())
         prefix_length = len(template_dir) + 1
 
         template_dir_items = [(root, dirs, files) for root, dirs, files in os.walk(template_dir)]
@@ -306,12 +303,6 @@ class PatchedTemplateCommand(TemplateCommand):
                 else:
                     shutil.rmtree(path_to_remove)
 
-    def _prepare_base_subdir_parameter(self, app_or_project, options):
-        """
-        Формирование параметра base_subdir
-        """
-        self.base_subdir = f'{app_or_project}_template'
-
     def _prepare_parameters(self, app_or_project, name, options):
         """
         Подготовка параметров для дальнейшей работы
@@ -322,7 +313,6 @@ class PatchedTemplateCommand(TemplateCommand):
         self.verbosity = options['verbosity']
         self.base_name = f'{app_or_project}_name'
         self.strategy = options['strategy']
-        self._prepare_base_subdir_parameter(app_or_project, options)
         self.base_directory = f'{app_or_project}_directory'
         self.base_python_path = f'{app_or_project}_python_path'
         self.camel_case_name = f'camel_case_{app_or_project}_name'
@@ -394,15 +384,6 @@ class Command(PatchedTemplateCommand):
             type=str,
             help='Полное (человекочитаемое) название функции',
             default='Безымянная функция',
-        )
-
-        parser.add_argument(
-            '--function_type',
-            dest='function_type',
-            action='store',
-            type=lambda t: FunctionTypeEnum(int(t)),
-            help='Тип исполнения функции. Возможные значения: 1 - синхронных, 2 - асинхронный',
-            default=FunctionTypeEnum.SYNC,
         )
 
         parser.add_argument(
