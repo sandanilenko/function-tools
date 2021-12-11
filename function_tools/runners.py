@@ -130,6 +130,8 @@ class LazySavingRunner(
                 runnable.validate()
                 runnable.after_validate()
 
+                runnable.run()
+
                 self.result.append_entity(runnable.result)
 
                 if runnable.result.has_not_errors:
@@ -174,6 +176,8 @@ class LazyStrictSavingRunner(
                 runnable.before_validate()
                 runnable.validate()
                 runnable.after_validate()
+
+                runnable.run()
 
                 self.result.append_entity(runnable.result)
 
