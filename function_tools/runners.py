@@ -126,7 +126,9 @@ class LazySavingRunner(
             while self._queue:
                 runnable: RunnableObject = self._queue.popleft()
 
-                runnable.run()
+                runnable.before_validate()
+                runnable.validate()
+                runnable.after_validate()
 
                 self.result.append_entity(runnable.result)
 
@@ -168,7 +170,10 @@ class LazyStrictSavingRunner(
                 runnable: RunnableObject = (
                     self._queue.popleft()
                 )
-                runnable.run()
+
+                runnable.before_validate()
+                runnable.validate()
+                runnable.after_validate()
 
                 self.result.append_entity(runnable.result)
 
