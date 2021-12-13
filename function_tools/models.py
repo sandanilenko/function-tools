@@ -8,7 +8,6 @@ from django.db.models import (
 )
 
 from m3_db_utils.models import (
-    ModelEnumValue,
     TitledModelEnum,
 )
 
@@ -17,20 +16,6 @@ class ImplementationStrategy(TitledModelEnum):
     """
     Перечисление стратегий реализации функций
     """
-
-    BASE_FUNCTION = ModelEnumValue(title='Реализация простой функции без отложенного сохранения')
-    LAZY_SAVING_FUNCTION = ModelEnumValue(
-        title=(
-            'Реализация функции с отложенным сохранением и предустановленной очередью объектов на сохранение. '
-            'Сохранение производится после удачной работы функции'
-        ),
-    )
-    LAZY_SAVING_RUNNER_FUNCTION = ModelEnumValue(
-        title=(
-            'Реализация функции с отложенным сохранением его делегированием пускателю. Когда все функции отработают, '
-            'только после этого запускается сохранение объектов из очередей каждой функции'
-        ),
-    )
 
     class Meta:
         db_table = 'function_tools_implementation_strategy'

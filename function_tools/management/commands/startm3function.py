@@ -4,8 +4,14 @@ import sys
 from distutils.util import (
     strtobool,
 )
+from importlib import (
+    import_module,
+)
 from os import (
     path,
+)
+from pathlib import (
+    Path,
 )
 
 import django
@@ -39,11 +45,8 @@ import function_tools
 from function_tools.management.consts import (
     PARAMETERS_DIALOG_WINDOW,
 )
-from function_tools.management.enums import (
-    FunctionTypeEnum,
-)
-from function_tools.management.strategies import (
-    ImplementationStrategyFactory,
+from function_tools.management.storages import (
+    ImplementationStrategyStorage,
 )
 from function_tools.models import (
     ImplementationStrategy,
@@ -98,34 +101,30 @@ class PatchedTemplateCommand(TemplateCommand):
             config=getattr(settings, 'ISORT_CONFIG') or DEFAULT_CONFIG,
         )
 
-    def handle_template(self, template, subdir):
+    def handle_template(self, template=None, subdir=None):
         """
-        Determine where the app or project templates are.
-        Use django.__path__[0] as the default because the Django install
-        directory isn't known.
+        Поиск директории с шаблоном функции
         """
-        if template is None:
-            return path.join(self._get_conf_dir_parent_path(), 'conf', subdir)
-        else:
-            if template.startswith('file://'):
-                template = template[7:]
+        template_directory_path = None
 
-            expanded_template = path.expanduser(template)
-            expanded_template = path.normpath(expanded_template)
+        for app_name in settings.INSTALLED_APPS:
+            app_module = import_module(app_name)
+            app_path = app_module.__path__
 
-            if path.isdir(expanded_template):
-                return expanded_template
+            application_path = Path(app_path[0])
 
-            if self.is_url(template):
-                # downloads the file and returns the path
-                absolute_path = self.download(template)
-            else:
-                absolute_path = path.abspath(expanded_template)
+            temp_template_directory_path = (
+                application_path / 'function_templates' / self.strategy.function_template_name
+            )
 
-            if path.exists(absolute_path):
-                return self.extract(absolute_path)
+            if temp_template_directory_path.is_dir():
+                template_directory_path = temp_template_directory_path
+                break
 
-        raise CommandError(f'couldn\'t handle {self.app_or_project} template {template}.')
+        if not template_directory_path:
+            raise CommandError(f'couldn\'t handle {self.strategy.function_template_name} template.')
+
+        return template_directory_path
 
     def _make_top_dir(self, target, name):
         """
@@ -238,10 +237,15 @@ class PatchedTemplateCommand(TemplateCommand):
             )
 
     def _create_package_by_template(self, options):
-        template_dir = self.handle_template(options['template'], self.base_subdir)
+        template_dir = str(self.handle_template())
         prefix_length = len(template_dir) + 1
 
-        for root, dirs, files in os.walk(template_dir):
+        template_dir_items = [(root, dirs, files) for root, dirs, files in os.walk(template_dir)]
+
+        if not template_dir_items:
+            raise CommandError('Please, check template directory, because directory is empty!')
+
+        for root, dirs, files in template_dir_items:
 
             path_rest = root[prefix_length:]
             relative_dir = path_rest.replace(self.base_name, self.name)
@@ -299,12 +303,6 @@ class PatchedTemplateCommand(TemplateCommand):
                 else:
                     shutil.rmtree(path_to_remove)
 
-    def _prepare_base_subdir_parameter(self, app_or_project, options):
-        """
-        Формирование параметра base_subdir
-        """
-        self.base_subdir = f'{app_or_project}_template'
-
     def _prepare_parameters(self, app_or_project, name, options):
         """
         Подготовка параметров для дальнейшей работы
@@ -314,7 +312,7 @@ class PatchedTemplateCommand(TemplateCommand):
         self.paths_to_remove = []
         self.verbosity = options['verbosity']
         self.base_name = f'{app_or_project}_name'
-        self._prepare_base_subdir_parameter(app_or_project, options)
+        self.strategy = options['strategy']
         self.base_directory = f'{app_or_project}_directory'
         self.base_python_path = f'{app_or_project}_python_path'
         self.camel_case_name = f'camel_case_{app_or_project}_name'
@@ -376,7 +374,7 @@ class Command(PatchedTemplateCommand):
                 {strategy_help} 
                 """
             ),
-            default=ImplementationStrategy.LAZY_SAVING_FUNCTION.key,
+            default=ImplementationStrategy.SYNC_LAZY_SAVING_FUNCTION.key,
         )
 
         parser.add_argument(
@@ -386,15 +384,6 @@ class Command(PatchedTemplateCommand):
             type=str,
             help='Полное (человекочитаемое) название функции',
             default='Безымянная функция',
-        )
-
-        parser.add_argument(
-            '--function_type',
-            dest='function_type',
-            action='store',
-            type=lambda t: FunctionTypeEnum(int(t)),
-            help='Тип исполнения функции. Возможные значения: 1 - синхронных, 2 - асинхронный',
-            default=FunctionTypeEnum.SYNC,
         )
 
         parser.add_argument(
@@ -474,8 +463,8 @@ class Command(PatchedTemplateCommand):
 
         strategy_key = options.pop('strategy')
 
-        strategy_factory = ImplementationStrategyFactory()
-        strategy = strategy_factory.get_strategy_implementation(
+        strategy_storage = ImplementationStrategyStorage()
+        strategy = strategy_storage.get_strategy_implementation(
             strategy_key=strategy_key,
         )
 
