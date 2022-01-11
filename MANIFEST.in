@@ -6,3 +6,5 @@ recursive-include *.js-tpl
 include LICENSE
 include setup.py
 include requirements.txt
+include CHANGES.md
+include README.md
