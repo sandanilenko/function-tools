@@ -10,7 +10,7 @@ from function_tools.errors import (
 
 class BaseRunnableResult:
     """
-    Базовый класс результататов выполнения запускаемых объектов
+    Базовый класс результатов выполнения запускаемых объектов
     """
 
     def __init__(self, *args, **kwargs):
@@ -39,7 +39,7 @@ class BaseRunnableResult:
         for entity in self._entities:
             if isinstance(entity, BaseError):
                 errors_list.append(entity)
-            elif isinstance(entity, self.__class__):
+            elif isinstance(entity, BaseRunnableResult):
                 errors_list.extend(entity.errors)
 
         return errors_list
